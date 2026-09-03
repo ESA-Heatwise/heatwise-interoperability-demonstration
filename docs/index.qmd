@@ -1,0 +1,26 @@
+---
+title: "Heatwise interoperability demonstration"
+---
+
+## Demonstration
+
+### Setup
+
+- Download repositories
+- Set up (as a script)
+
+### Items to show (per product)
+
+- CWL validity
+- Setup is valid (Directory + STAC)
+- Can run to produce output
+- Show output
+- CWL contains required fields
+- STAC output contains required fields
+
+### Context
+
+- Product overview
+- What is EOAP and what for
+- xcengine
+- How to build the EOAPs

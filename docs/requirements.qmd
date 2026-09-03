@@ -1,0 +1,73 @@
+---
+title: EOAP requirements
+---
+
+## Requirement 1: req/app/cmd-line
+
+> The Application SHALL be a non-interactive executable as a command-line application.
+
+## Requirement 2: req/app/container
+
+> The environment, libraries, binaries, executable and configuration files necessary to execute the Application SHALL be bundled in a container image.
+
+## Requirement 3: req/app/registry
+
+> The Application container image SHALL be accessible in a container registry.
+
+## Requirement 4: req/app/stac-input
+
+> An Application input argument that requires staged EO product files SHALL be defined as an argument that points to a folder where a STAC Catalog, named catalog.json, contains a list of one or more STAC Items and associated STAC Assets referencing the files.
+
+## Requirement 5: req/app/stac-out
+
+> An Application that creates EO product files to be stage-out SHALL generate a valid STAC Catalog, named catalog.json, and include the STAC Item(s) and corresponding STAC Assets pointing to the results of the processing.
+
+## Requirement 6: rec/app/stac-out-metadata
+
+> The STAC Catalog created by the Application SHALL include metadata elements for each STAC Item with at least their spatial (geometry, box) and temporal (datetime) properties.
+
+## Requirement 7: req/app-pck/cwl
+
+> The Application Package SHALL be a valid CWL document with a “Workflow” class and one or more “CommandLineTool” classes.
+
+## Requirement 9: req/app-pck/clt
+
+> The Application Package CWL CommandLineTool classes SHALL contain the following elements:
+> — Identifier (“id”)
+> — Command line name (“baseCommand”)
+> — Input parameters (“inputs”)
+> — Environment requirements (“requirements”)
+> — Docker information (“DockerRequirement”)
+
+## Requirement 9: req/app-pck/wf
+
+> The Application Package CWL Workflow class SHALL contain the following elements:
+> — Identifier (“id”)
+> — Title (“label”)
+> — Abstract (“doc”)
+
+
+## Requirement 10: req/app-pck/wf-inputs
+
+> The Application Package CWL Workflow class “inputs” fields SHALL contain the following elements:
+> — Identifier (“id”)
+> — Title (“label”)
+> — Abstract (“doc”)
+
+## Requirement 11: req/app-pck/metadata
+
+> The Application Package CWL Workclass classes SHALL include additional metadata as defined in Table 1
+
+> Required in table 1: version
+
+## Requirement 12: req/app-pck-stage-in/clt-stac
+
+> All input parameters of the CWL ComandLineTool that require the staging of EO products SHALL be of type Directory.
+
+## Requirement 13: req/app-pck-stage-in/wf-stac
+
+> Input parameters of the CWL Workflow that require the staging of EO products SHALL be of type Directory.
+
+## Requirement 14: req/app-pck-stage-out/output-stac
+
+> The outputs field of the CommandLineTool that requires the stage-out of EO products SHALL retrieve all the files produced in the working directory.
