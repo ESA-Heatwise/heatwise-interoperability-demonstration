@@ -1,0 +1,223 @@
+---
+title: Combined Hotspots and Materials Product
+---
+
+## Preparation
+
+
+```{bash}
+eval "$(pixi shell-hook --change-ps1 false)"
+```
+
+
+```{bash}
+SOFTWARE_ROOT=../../lstm-wp3-products/products/ua
+DOCKER_IMAGE_ID=hw-uacomb:1
+OUTPUT_PATH="$(pwd)/../outputs/combined_hotspots_materials"
+INPUT_PATH="$(pwd)/../inputs/combined_hotspots_materials"
+ls -ltrAh --color=never "$SOFTWARE_ROOT"
+```
+
+## Running the software
+
+### Running as a docker container
+
+```{bash}
+mkdir -p "$OUTPUT_PATH"
+docker run --rm --user "$(id -u):$(id -g)" --workdir=/home/mambauser/wd -v $SOFTWARE_ROOT/data:/home/mambauser/data -v $SOFTWARE_ROOT/inputs:/home/mambauser/wd/inputs -v "$OUTPUT_PATH":/home/mambauser/wd $DOCKER_IMAGE_ID || FAIL_REQ_1_2=1
+ls -ltrAh --color=never $OUTPUT_PATH
+
+```
+
+```{bash}
+check-container-registry.sh $DOCKER_IMAGE_ID || FAIL_REQ_3=1
+```
+
+#### Requirements Validated
+
+**req/app/cmd-line** (Requirement 1)
+
+> The Application SHALL be a non-interactive executable as a command-line application.
+
+
+**req/app/container** (Requirement 2)
+
+> The environment, libraries, binaries, executable and configuration files necessary to execute the Application SHALL be bundled in a container image.
+
+
+**req/app/registry** (Requirement 3)
+
+> The Application container image SHALL be accessible in a container registry.
+
+### Running as an Application Package
+
+```{bash}
+cwltool --disable-color --validate $SOFTWARE_ROOT/eoap.cwl | cat
+```
+
+```{bash}
+show-cwl-graph-classes.sh $SOFTWARE_ROOT/app/eoap.cwl
+```
+
+```{bash}
+cwltool \
+    --disable-color \
+    --outdir $OUTPUT_PATH/cwlruns \
+    $SOFTWARE_ROOT/app/eoap.cwl#heatwise_combined \
+    \
+    --urban_atlas $INPUT_PATH/urban_atlas \
+    --hcspots  $INPUT_PATH/hcspots \
+    --material_labels $INPUT_PATH/material_labels \
+    || FAIL_REQ_7=1 \
+    | cat
+```
+
+Cwltool creates a new output directory with a random name when it is run.
+We save the last run in a variable to access it later:
+
+```{bash}
+CWLRUN_PATH=$(find_newest_directory_entry.sh "$OUTPUT_PATH/cwlruns")
+echo "Path to last cwl run: $CWLRUN_PATH"
+```
+
+#### Requirements Validated
+
+**req/app-pck/cwl** (Requirement 7)
+
+> The Application Package SHALL be a valid CWL document with a “Workflow” class and one or more “CommandLineTool” classes.
+
+
+### STAC input / output
+
+#### Inputs
+
+The EO Products of the input are provided as directories with a `catalog.json` describing the products each:
+
+```{bash}
+ls -lAhX --color=never $INPUT_PATH/*
+```
+
+These same inputs are classed as `Directory` in the workflow:
+
+```{bash}
+extract-directory-inputs-from.sh Workflow $SOFTWARE_ROOT/app/eoap.cwl
+```
+
+#### Outputs
+
+The output contains a single `catalog.json` and item, describing the output.
+Using the recursive validation, both the catalog and item are confirmed to be valid STAC.
+
+```{bash}
+stac-validator validate --recursive $OUTPUT_PATH/catalog.json | cat || FAIL_REQ_5=1
+
+```
+
+The EOAP best practice mandates that the item contains at least `geometry, bbox` and `datetime` keys:
+
+```{bash}
+extract_output_keys_from_stac_item.sh $CWLRUN_PATH/datasets_saved/urban_atlas_with_hotspots.json || FAIL_REQ_6
+```
+
+
+
+#### Requirements Validated
+
+**req/app/stac-input** (Requirement 4)
+
+> An Application input argument that requires staged EO product files SHALL be defined as an argument that points to a folder where a STAC Catalog, named catalog.json, contains a list of one or more STAC Items and associated STAC Assets referencing the files.
+
+**req/app/stac-out** (Requirement 5)
+
+> An Application that creates EO product files to be stage-out SHALL generate a valid STAC Catalog, named catalog.json, and include the STAC Item(s) and corresponding STAC Assets pointing to the results of the processing.
+
+
+**rec/app/stac-out-metadata** (Requirement 6)
+
+> The STAC Catalog created by the Application SHALL include metadata elements for each STAC Item with at least their spatial (geometry, box) and temporal (datetime) properties.
+
+
+### CWL
+
+```{bash}
+check_commandlinetool_fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_8=1
+```
+
+```{bash}
+check_workflow_fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_10=1
+```
+
+```{bash}
+check_workflow_input_fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_11=1
+```
+
+```{bash}
+check_version.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_9=1
+```
+
+#### Requirements Validated
+
+**req/app-pck/clt** (Requirement 8)
+
+> The Application Package CWL CommandLineTool classes SHALL contain the following elements:
+> — Identifier (“id”)
+> — Command line name (“baseCommand”)
+> — Input parameters (“inputs”)
+> — Environment requirements (“requirements”)
+> — Docker information (“DockerRequirement”)
+
+**req/app-pck/wf** (Requirement 9)
+
+> The Application Package CWL Workflow class SHALL contain the following elements:
+> — Identifier (“id”)
+> — Title (“label”)
+> — Abstract (“doc”)
+
+
+**req/app-pck/wf-inputs** (Requirement 10)
+
+> The Application Package CWL Workflow class “inputs” fields SHALL contain the following elements:
+> — Identifier (“id”)
+> — Title (“label”)
+> — Abstract (“doc”)
+
+**req/app-pck/metadata** (Requirement 11)
+
+> The Application Package CWL Workclass classes SHALL include additional metadata as defined in Table 1
+
+> Required in table 1: version
+
+
+### CWL STAC / IO
+
+#### Inputs
+
+Command Line Tool
+
+```{bash}
+extract-directory-inputs-from.sh CommandLineTool $SOFTWARE_ROOT/app/eoap.cwl
+```
+
+```{bash}
+extract-directory-inputs-from.sh Workflow $SOFTWARE_ROOT/app/eoap.cwl
+```
+
+```{bash}
+extract-commandlinetool-outputs.sh $SOFTWARE_ROOT/app/eoap.cwl
+```
+
+#### Requirements validated
+
+**req/app-pck-stage-in/clt-stac** (Requirement 12)
+
+> All input parameters of the CWL ComandLineTool that require the staging of EO products SHALL be of type Directory.
+
+**req/app-pck-stage-in/wf-stac** (Requirement 13)
+
+> Input parameters of the CWL Workflow that require the staging of EO products SHALL be of type Directory.
+
+
+**req/app-pck-stage-out/output-stac** (Requirement 14)
+
+> The outputs field of the CommandLineTool that requires the stage-out of EO products SHALL retrieve all the files produced in the working directory.
+

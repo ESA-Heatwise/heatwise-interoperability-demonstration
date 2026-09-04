@@ -3,3 +3,9 @@
 !.pixi/config.toml
 **/cwlruns
 **/_site
+**/_site_*
+inputs
+outputs
+
+/.quarto/
+**/*.quarto_ipynb

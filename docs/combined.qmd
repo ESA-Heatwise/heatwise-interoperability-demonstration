@@ -1,15 +1,132 @@
 ---
 title: Combined product
-execute:
-    freeze: true
 ---
 
-
-
-## CWL validity
+```{bash}
+eval "$(pixi shell-hook)"
+```
 
 ```{bash}
-pixi run --manifest-path ../../lstm-wp3-products/products/hotspots/pixi.toml --as-is cwltool --disable-color --validate ../../lstm-wp3-products/products/hotspots/app/eoap.cwl | cat
+SOFTWARE_ROOT=../../lstm-wp3-products/products/ua
+DOCKER_IMAGE_ID=hw-uacomb:1
+OUTPUT_PATH="$(pwd)/outputs/urban_atlas"
+ls -ltrAh --color=never "$SOFTWARE_ROOT"
+```
+
+## Conformance Class "Application"
+
+
+### Requirement 1: req/app/cmd-line & Requirement 2: req/app/container
+
+**req/app/cmd-line**
+
+> The Application SHALL be a non-interactive executable as a command-line application.
+
+
+**req/app/container**
+
+> The environment, libraries, binaries, executable and configuration files necessary to execute the Application SHALL be bundled in a container image.
+
+Requirement `req/app/cmd-line` can be shown by running an EOAP which includes a CommandLineTool with a docker requirement. To execute via CWL, the application must be executable on the command line (this is the mechanism that CWL uses) and a DockerRequirement makes sure this execution happens as a container. By running the application, we can see that no interactive input is required.
+
+By running the command line using the container image, we show that everything required is avaiable in a container image.
+
+The software product contains a run script to execute docker directly:
+
+```{bash}
+cat "$SOFTWARE_ROOT"/run.sh
+```
+
+```{bash}
+mkdir -p "$OUTPUT_PATH"
+docker run --rm --user "$(id -u):$(id -g)" --workdir=/home/mambauser/wd -v $SOFTWARE_ROOT/data:/home/mambauser/data -v $SOFTWARE_ROOT/inputs:/home/mambauser/wd/inputs -v "$OUTPUT_PATH":/home/mambauser/wd $DOCKER_IMAGE_ID || FAIL_REQ_1_2=1
+ls -ltrAh --color=never $OUTPUT_PATH
+```
+
+### Requirement 3: req/app/registry
+
+**req/app/registry**
+
+> The Application container image SHALL be accessible in a container registry.
+
+We can verify that the docker image used above is the same as specified in the CWL CommandLineTool:
+
+```{bash}
+echo "Docker image ID: $DOCKER_IMAGE_ID"
+yq -M '."$graph"[1].requirements' "$SOFTWARE_ROOT/app/eoap.cwl"
+yq -M '."$graph"[1].requirements.DockerRequirement.dockerPull' "$SOFTWARE_ROOT/app/eoap.cwl"
+```
+
+And that this docker image is available in a registry :
+
+```{bash}
+docker manifest inspect $DOCKER_IMAGE_ID || FAIL_REQ_3=1 | head -n 20
+```
+
+### Requirement 4: req/app/stac-input
+
+**req/app/stac-input**
+
+> An Application input argument that requires staged EO product files SHALL be defined as an argument that points to a folder where a STAC Catalog, named catalog.json, contains a list of one or more STAC Items and associated STAC Assets referencing the files.
+
+We can inspect the CWL document to verify that there are inputs with the `Directory` type:
+
+```{bash}
+yq -M -e '(."$graph"[] | select(.class == "Workflow")).inputs[] | select(.type == "Directory")' $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_4=1
+```
+
+And inspect the input directories we will later provide to the process.
+
+<!-- TODO inputs will be placed somewhere else than the software root -->
+```{bash}
+ls -ltrAh --color=never $SOFTWARE_ROOT/inputs/urban_atlas
+```
+
+```{bash}
+ls -ltrAh --color=never $SOFTWARE_ROOT/inputs/material_labels
+```
+
+```{bash}
+ls -ltrAh --color=never $SOFTWARE_ROOT/inputs/hcspots
+```
+
+```{bash}
+cat $SOFTWARE_ROOT/inputs/urban_atlas/catalog.json
+```
+
+### Requirement 5: req/app/stac-out
+
+**req/app/stac-out**
+
+> An Application that creates EO product files to be stage-out SHALL generate a valid STAC Catalog, named catalog.json, and include the STAC Item(s) and corresponding STAC Assets pointing to the results of the processing.
+
+We can inspect the output of the application that we ran with docker above.
+
+```{bash}
+ls -ltrAh --color=never "$OUTPUT_PATH"
+```
+
+With stac-validator, we verify that the output catalog and all referenced items are valid:
+
+```{bash}
+stac-validator validate --recursive $OUTPUT_PATH/catalog.json | cat || FAIL_REQ_5=1
+```
+
+
+### Requirement 6: rec/app/stac-out-metadata
+
+> The STAC Catalog created by the Application SHALL include metadata elements for each STAC Item with at least their spatial (geometry, box) and temporal (datetime) properties.
+
+
+## Conformance Class "Application Package"
+
+### Requirement 7: req/app-pck/cwl
+
+> The Application Package SHALL be a valid CWL document with a “Workflow” class and one or more “CommandLineTool” classes.
+
+
+```{bash}
+cwltool --disable-color --validate ../../lstm-wp3-products/products/ua/app/eoap.cwl | cat
 ```
 
 - Warning is okay, there is no "main" because platforms may manage their main on their own accord
@@ -25,26 +142,24 @@ tree -n ../../lstm-wp3-products/products/ua/inputs
 ## Can run to produce output
 
 ```{bash}
-pixi run --manifest-path ../../lstm-wp3-products/products/hotspots/pixi.toml --as-is cwltool --disable-color --outdir ../cwlruns/combined ../../lstm-wp3-products/products/ua/app/eoap.cwl#heatwise_combined --urban_atlas ../../lstm-wp3-products/products/ua/inputs/urban_atlas --hcspots  ../../lstm-wp3-products/products/ua/inputs/hcspots --material_labels ../../lstm-wp3-products/products/ua/inputs/material_labels | cat
+cwltool --disable-color --outdir ../cwlruns/combined ../../lstm-wp3-products/products/ua/app/eoap.cwl#heatwise_combined --urban_atlas ../../lstm-wp3-products/products/ua/inputs/urban_atlas --hcspots  ../../lstm-wp3-products/products/ua/inputs/hcspots --material_labels ../../lstm-wp3-products/products/ua/inputs/material_labels | cat
 ```
 
 ## Show output
 
 ```{bash}
-pixi run --as-is  python -c "import geopandas as gpd; import matplotlib.pyplot as plt; gpd.read_file('cwlruns/combined/zeb8irli/datasets_saved/hw_combined_sepolia.gpkg').plot();  plt.savefig('hw_combined_sepolia.png', dpi=300, bbox_inches='tight')"
+python -c "import geopandas as gpd; import matplotlib.pyplot as plt; gpd.read_file('cwlruns/combined/zeb8irli/datasets_saved/hw_combined_sepolia.gpkg').plot();  plt.savefig('hw_combined_sepolia.png', dpi=300, bbox_inches='tight')"
 
 ```
 
-![image](hw_combined_sepolia.png)
+[image](hw_combined_sepolia.png)
 
 
-<!-- TODO: Does not work, because the item contains incorrect geometry -->
+```{bash}
+pixi run --as-is  python -c "import geopandas as gpd; import matplotlib.pyplot as plt; gpd.read_file('cwlruns/combined/zeb8irli/datasets_saved/urban_atlas_with_hotspots.json').plot();  plt.savefig('hw_combined_sepolia_geometry.png', dpi=300, bbox_inches='tight')" || :
+```
+
 <!--
-```{.bash}
-pixi run --as-is  python -c "import geopandas as gpd; import matplotlib.pyplot as plt; gpd.read_file('cwlruns/combined/zeb8irli/datasets_saved/urban_atlas_with_hotspots.json').plot();  plt.savefig('hw_combined_sepolia_geometry.png', dpi=300, bbox_inches='tight')"
-
-```
-
 ![image](hw_combined_sepolia_geometry.png)
 -->
 
@@ -55,7 +170,7 @@ pixi run --as-is  python -c "import geopandas as gpd; import matplotlib.pyplot a
 Catalog
 
 ```{bash}
-pixi run --as-is stac-validator validate --recursive cwlruns/combined/zeb8irli/catalog.json | cat || :
+stac-validator validate --recursive cwlruns/combined/zeb8irli/catalog.json | cat || :
 ```
 
 ## output contains required fields
@@ -66,16 +181,26 @@ pixi run --as-is stac-validator validate --recursive cwlruns/combined/zeb8irli/c
 
 Test validity
 ```{bash}
-pixi run --as-is jq -M 'has("geometry") and has("bbox") and has("properties") and (.properties | has("datetime"))' cwlruns/combined/zeb8irli/datasets_saved/urban_atlas_with_hotspots.json || :
+jq -M 'has("geometry") and has("bbox") and has("properties") and (.properties | has("datetime"))' cwlruns/combined/zeb8irli/datasets_saved/urban_atlas_with_hotspots.json || :
 ```
 
 Show
 
 ```{bash}
-pixi run --as-is jq -M '{name: .bbox, properties: .properties}' cwlruns/combined/zeb8irli/datasets_saved/urban_atlas_with_hotspots.json | cat
+jq -M '{name: .bbox, properties: .properties}' cwlruns/combined/zeb8irli/datasets_saved/urban_atlas_with_hotspots.json | cat
 
 ```
 
 ```{bash}
-pixi -q run --as-is jq -M '{geometry: .geometry}' cwlruns/combined/zeb8irli/datasets_saved/urban_atlas_with_hotspots.json | head -n 20
+jq -M '{geometry: .geometry}' cwlruns/combined/zeb8irli/datasets_saved/urban_atlas_with_hotspots.json | head -n 20
+```
+
+
+### Report
+
+```{bash}
+if [[ -z "$FAIL_REQ_1_2" ]] then echo "req/app/cmd-line & req/app/container"; fi
+if [[ -z "$FAIL_REQ_3" ]] then echo "req/app/registry"; fi
+if [[ -z "$FAIL_REQ_4" ]] then echo "req/app/stac-input"; fi
+if [[ -z "$FAIL_REQ_5" ]] then echo "req/app/stac-out"; fi
 ```

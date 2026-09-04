@@ -13,9 +13,13 @@ website:
     contents:
       - href: index.qmd
         text: Home
+      - href: tools.qmd
+        text: Tools
+      - href: requirements.qmd
       - href: combined.qmd
         text: Urban Atlas Combined Product
-      - href: requirements.qmd
+      - href: combined_hotspots_materials.qmd
+        text: Combined Hotspots and Materials product
 
 
 format:

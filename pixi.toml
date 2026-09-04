@@ -12,6 +12,9 @@ bash_kernel = ">=0.10.0,<0.11"
 geopandas = ">=1.1.4,<2"
 pystac = ">=1.15.2,<2"
 shapely = ">=2.1.2,<3"
+cwltool = ">=3.2.20260413085819,<4"
+skopeo = ">=1.24.0,<2"
+jupyterlab = ">=4.6.3,<5"
 
 [environments]
 dev = ["dev", "docs"]
@@ -20,6 +23,7 @@ dev = ["dev", "docs"]
 pytest = ">=9.1.1,<10"
 prek = ">=0.5.1,<0.6"
 pytest-cov = ">=7.1.0,<8"
+typst = ">=0.14.2,<0.15"
 
 [feature.docs.dependencies]
 quarto = ">=1.9.38,<2"
@@ -27,3 +31,6 @@ jupyter = ">=1.1.1,<2"
 
 [pypi-dependencies]
 stac-valid = ">=4.5.2, <5"
+
+[activation.env]
+PATH = "$PIXI_PROJECT_ROOT/scripts:$PATH"

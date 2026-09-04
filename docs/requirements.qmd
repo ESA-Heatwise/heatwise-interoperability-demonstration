@@ -30,7 +30,7 @@ title: EOAP requirements
 
 > The Application Package SHALL be a valid CWL document with a “Workflow” class and one or more “CommandLineTool” classes.
 
-## Requirement 9: req/app-pck/clt
+## Requirement 8: req/app-pck/clt
 
 > The Application Package CWL CommandLineTool classes SHALL contain the following elements:
 > — Identifier (“id”)
