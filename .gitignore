@@ -6,6 +6,9 @@
 **/_site_*
 inputs
 outputs
+application-packages
+software
+
 
 /.quarto/
 **/*.quarto_ipynb
