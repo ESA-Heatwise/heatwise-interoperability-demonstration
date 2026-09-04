@@ -76,7 +76,7 @@ Cwltool creates a new output directory with a random name when it is run.
 We save the last run in a variable to access it later:
 
 ```{bash}
-CWLRUN_PATH=$(find_newest_directory_entry.sh "$OUTPUT_PATH/cwlruns")
+CWLRUN_PATH=$(find-newest-directory-entry.sh "$OUTPUT_PATH/cwlruns")
 echo "Path to last cwl run: $CWLRUN_PATH"
 ```
 
@@ -116,7 +116,7 @@ stac-validator validate --recursive $OUTPUT_PATH/catalog.json | cat || FAIL_REQ_
 The EOAP best practice mandates that the item contains at least `geometry, bbox` and `datetime` keys:
 
 ```{bash}
-extract_output_keys_from_stac_item.sh $CWLRUN_PATH/datasets_saved/urban_atlas_with_hotspots.json || FAIL_REQ_6
+extract-output-keys-from-stac-item.sh $CWLRUN_PATH/datasets_saved/urban_atlas_with_hotspots.json || FAIL_REQ_6
 ```
 
 
@@ -140,19 +140,19 @@ extract_output_keys_from_stac_item.sh $CWLRUN_PATH/datasets_saved/urban_atlas_wi
 ### CWL
 
 ```{bash}
-check_commandlinetool_fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_8=1
+check-commandlinetool-fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_8=1
 ```
 
 ```{bash}
-check_workflow_fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_10=1
+check-workflow-fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_10=1
 ```
 
 ```{bash}
-check_workflow_input_fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_11=1
+check-workflow-input-fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_11=1
 ```
 
 ```{bash}
-check_version.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_9=1
+check-version.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_9=1
 ```
 
 #### Requirements Validated
