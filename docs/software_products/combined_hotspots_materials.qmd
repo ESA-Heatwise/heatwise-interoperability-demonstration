@@ -1,33 +1,69 @@
 ---
 title: Combined Hotspots and Materials Product
+execute:
+    freeze: true
 ---
+
+## Introduction
+
+The following sections demonstrate that the HEATWISE Combined Hotspots and Materials Software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
+
+The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requiremnt.
+
+The demostration proceeds in the following steps:
+
+- Execute the software as docker container and as CWL document (the EOAP)
+- Show that STAC inputs and outputs are handled by the application as required
+- Show that the CWL document is structured as required
+- Show that STAC inputs and outputs are declared in the CWL as required
+
+After each step, the requirements shown are listed.
+
+@sec-requirements contains an overview of all requirements in order and how they are demonstrated in this document. It furthermore shows all utility scripts used in this demonstration. For brevity, the content of utility scripts only shown in the requirements overview and not in each demonstration.
 
 ## Preparation
 
+Activate the pixi environment to make validation tools and scripts available.
 
 ```{bash}
 eval "$(pixi shell-hook --change-ps1 false)"
 ```
 
+Set environment variables to software, cwl documents, inputs and outputs.
 
 ```{bash}
-SOFTWARE_ROOT=../../../lstm-wp3-products/products/ua
+set -x
+SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/lstm-wp3-products/products/ua
+CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise-combined-hotspots-materials.cwl
+INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/combined_hotspots_materials
+
 DOCKER_IMAGE_ID=hw-uacomb:1
-OUTPUT_PATH="$(pwd)/../../outputs/combined_hotspots_materials"
-INPUT_PATH="$(pwd)/../../inputs/combined_hotspots_materials"
+OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/combined_hotspots_materials/
+
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
+set +x
 ```
 
 ## Running the software
 
+The first set of requirements is concerned with how the software is executed. It shall be
+
+- Runnable as a non-interactive script
+- Bundled in (Docker) container
+- Executable as a CWL Workflow containing at least one CWL CommandLineTool
+
 ### Running as a docker container
+
+We can run the (dockerized) software directly, without using the CWL machinery with `docker run`:
 
 ```{bash}
 mkdir -p "$OUTPUT_PATH"
-docker run --rm --user "$(id -u):$(id -g)" --workdir=/home/mambauser/wd -v $SOFTWARE_ROOT/data:/home/mambauser/data -v $SOFTWARE_ROOT/inputs:/home/mambauser/wd/inputs -v "$OUTPUT_PATH":/home/mambauser/wd $DOCKER_IMAGE_ID || FAIL_REQ_1_2=1
+docker run --rm --user "$(id -u):$(id -g)" --workdir=/home/mambauser/wd -v $SOFTWARE_ROOT/data:/home/mambauser/data -v $SOFTWARE_ROOT/inputs:/home/mambauser/wd/inputs -v "$OUTPUT_PATH":/home/mambauser/wd $DOCKER_IMAGE_ID || { FAIL_REQ_1=1; FAIL_REQ_2=1; }
 ls -ltrAh --color=never $OUTPUT_PATH
 
 ```
+
+The image should not only be avaiable locally, but also in a container registry.
 
 ```{bash}
 check-container-registry.sh $DOCKER_IMAGE_ID || FAIL_REQ_3=1
@@ -49,21 +85,28 @@ check-container-registry.sh $DOCKER_IMAGE_ID || FAIL_REQ_3=1
 
 > The Application container image SHALL be accessible in a container registry.
 
-### Running as an Application Package
+### Running as an EOAP
+
+First, we validate that that the CWL document is valid.
 
 ```{bash}
-cwltool --disable-color --validate $SOFTWARE_ROOT/eoap.cwl | cat
+cwltool --disable-color --validate "$CWL_PATH" | cat
 ```
 
+The CWL should contain a `Workflow` and at least one `CommandLineTool` object.
+We inpect the classes in the CWL graph to make sure.
+
 ```{bash}
-show-cwl-graph-classes.sh $SOFTWARE_ROOT/app/eoap.cwl
+show-cwl-graph-classes.sh "$CWL_PATH"
 ```
+
+The EOAP can be executed from its CWL description with `cwltool`.
 
 ```{bash}
 cwltool \
     --disable-color \
     --outdir $OUTPUT_PATH/cwlruns \
-    $SOFTWARE_ROOT/app/eoap.cwl#heatwise_combined \
+    "$CWL_PATH"#heatwise_combined \
     \
     --urban_atlas $INPUT_PATH/urban_atlas \
     --hcspots  $INPUT_PATH/hcspots \
@@ -73,7 +116,7 @@ cwltool \
 ```
 
 Cwltool creates a new output directory with a random name when it is run.
-We save the last run in a variable to access it later:
+We save the last run in a variable to access it later.
 
 ```{bash}
 CWLRUN_PATH=$(find-newest-directory-entry.sh "$OUTPUT_PATH/cwlruns")
@@ -87,9 +130,9 @@ echo "Path to last cwl run: $CWLRUN_PATH"
 > The Application Package SHALL be a valid CWL document with a “Workflow” class and one or more “CommandLineTool” classes.
 
 
-### STAC input / output
+## STAC input / output
 
-#### Inputs
+### Inputs
 
 The EO Products of the input are provided as directories with a `catalog.json` describing the products each:
 
@@ -100,10 +143,10 @@ ls -lAhX --color=never $INPUT_PATH/*
 These same inputs are classed as `Directory` in the workflow:
 
 ```{bash}
-extract-directory-inputs-from.sh Workflow $SOFTWARE_ROOT/app/eoap.cwl
+extract-directory-inputs-from.sh Workflow "$CWL_PATH" || FAIL_REQ_4=1
 ```
 
-#### Outputs
+### Outputs
 
 The output contains a single `catalog.json` and item, describing the output.
 Using the recursive validation, both the catalog and item are confirmed to be valid STAC.
@@ -113,7 +156,7 @@ stac-validator validate --recursive $OUTPUT_PATH/catalog.json | cat || FAIL_REQ_
 
 ```
 
-The EOAP best practice mandates that the item contains at least `geometry, bbox` and `datetime` keys:
+The EOAP best practice mandates that the item contains at least `geometry, bbox` and `datetime` keys.
 
 ```{bash}
 extract-output-keys-from-stac-item.sh $CWLRUN_PATH/datasets_saved/urban_atlas_with_hotspots.json || FAIL_REQ_6
@@ -121,7 +164,7 @@ extract-output-keys-from-stac-item.sh $CWLRUN_PATH/datasets_saved/urban_atlas_wi
 
 
 
-#### Requirements Validated
+### Requirements Validated
 
 **req/app/stac-input** (Requirement 4)
 
@@ -137,25 +180,34 @@ extract-output-keys-from-stac-item.sh $CWLRUN_PATH/datasets_saved/urban_atlas_wi
 > The STAC Catalog created by the Application SHALL include metadata elements for each STAC Item with at least their spatial (geometry, box) and temporal (datetime) properties.
 
 
-### CWL
+## CWL
+
+The fields `id`, `baseCommand`, `inputs`, `requirements` should be present in the `CommandLineTool`.
+One of the requirements should be `DockerRequirement`.
 
 ```{bash}
-check-commandlinetool-fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_8=1
+check-commandlinetool-fields.sh "$CWL_PATH" || FAIL_REQ_8=1
 ```
 
+The fields `id`, `label`, and `doc` should be present in the `Workflow`.
+
 ```{bash}
-check-workflow-fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_10=1
+check-workflow-fields.sh "$CWL_PATH" || FAIL_REQ_10=1
 ```
+
+Each input of the `Workflow` should have fields `id`, `label`, and `doc`
 
 ```{bash}
 check-workflow-input-fields.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_11=1
 ```
 
+The CWL document should contain a `version`:
+
 ```{bash}
 check-version.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_9=1
 ```
 
-#### Requirements Validated
+### Requirements Validated
 
 **req/app-pck/clt** (Requirement 8)
 
@@ -188,25 +240,36 @@ check-version.sh $SOFTWARE_ROOT/app/eoap.cwl || FAIL_REQ_9=1
 > Required in table 1: version
 
 
-### CWL STAC / IO
+## CWL STAC / IO
 
-#### Inputs
 
-Command Line Tool
+Inputs and outputs are staged in and out using STAC catalogs. Each input that is an "EO Product" like a vector or raster dataset is declared as type `Directory` and is described by a STAC catalog `catalog.json` and accompanying STAC item(s) placed in that directory.
 
-```{bash}
-extract-directory-inputs-from.sh CommandLineTool $SOFTWARE_ROOT/app/eoap.cwl
-```
+Outputs are handled in much the same way, the application in the application package is reposible for generating a STAC catalog (also named `catalog.json`) and stage out all the contents of its working directory together with the STAC metadata describing the outputs.
 
-```{bash}
-extract-directory-inputs-from.sh Workflow $SOFTWARE_ROOT/app/eoap.cwl
-```
+### Inputs
+
+There are inputs of type directory in the CommandLineTool description.
 
 ```{bash}
-extract-commandlinetool-outputs.sh $SOFTWARE_ROOT/app/eoap.cwl
+extract-directory-inputs-from.sh CommandLineTool "$CWL_PATH" || FAIL_REQ_12=1
 ```
 
-#### Requirements validated
+There are inputs of type directory in the Workflow description.
+
+```{bash}
+extract-directory-inputs-from.sh Workflow "$CWL_PATH" || FAIL_REQ_13=1
+```
+
+### Outputs
+
+The CommandLineTool stages out all the contents of the working directory.
+
+```{bash}
+extract-commandlinetool-outputs.sh "$CWL_PATH" || FAIL_REQ_14=1
+```
+
+### Requirements validated
 
 **req/app-pck-stage-in/clt-stac** (Requirement 12)
 
@@ -216,8 +279,23 @@ extract-commandlinetool-outputs.sh $SOFTWARE_ROOT/app/eoap.cwl
 
 > Input parameters of the CWL Workflow that require the staging of EO products SHALL be of type Directory.
 
-
 **req/app-pck-stage-out/output-stac** (Requirement 14)
 
 > The outputs field of the CommandLineTool that requires the stage-out of EO products SHALL retrieve all the files produced in the working directory.
 
+## Summary
+
+```{bash}
+
+for i in {1..14}; do
+    var="FAIL_REQ_$i"
+    req=${var#FAIL_}
+    if [[ "${!var:-}" == "1" ]]; then
+        #echo "$req: FAILED"
+        printf '%s\t\033[31mFAILED\033[0m\n' "$req"
+    else
+        printf '%s\t\033[32mPASSED\033[0m\n' "$req"
+    fi
+done
+
+```
