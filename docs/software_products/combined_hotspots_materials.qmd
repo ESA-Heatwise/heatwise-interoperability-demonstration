@@ -11,10 +11,10 @@ eval "$(pixi shell-hook --change-ps1 false)"
 
 
 ```{bash}
-SOFTWARE_ROOT=../../lstm-wp3-products/products/ua
+SOFTWARE_ROOT=../../../lstm-wp3-products/products/ua
 DOCKER_IMAGE_ID=hw-uacomb:1
-OUTPUT_PATH="$(pwd)/../outputs/combined_hotspots_materials"
-INPUT_PATH="$(pwd)/../inputs/combined_hotspots_materials"
+OUTPUT_PATH="$(pwd)/../../outputs/combined_hotspots_materials"
+INPUT_PATH="$(pwd)/../../inputs/combined_hotspots_materials"
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
 ```
 

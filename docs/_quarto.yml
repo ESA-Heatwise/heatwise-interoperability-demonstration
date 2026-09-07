@@ -1,24 +1,15 @@
 project:
-  type: website
+  type: book
 
-website:
+book:
   title: "Heatwise interoperability demonstration"
-  navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
-  sidebar:
-    style: docked
-    contents:
-      - href: index.qmd
-        text: Home
-      - href: introduction.qmd
-        text: Introduction
-      - href: tools.qmd
-        text: Tools
-      - href: requirements.qmd
-      - href: combined_hotspots_materials.qmd
+  chapters:
+    - href: index.qmd
+    - href: requirements.qmd
+    - href: setup.qmd
+    - part: "Software Products"
+      chapters:
+      - href: software_products/combined_hotspots_materials.qmd
         text: Combined Hotspots and Materials product
 
 
