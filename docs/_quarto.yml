@@ -13,6 +13,8 @@ website:
     contents:
       - href: index.qmd
         text: Home
+      - href: introduction.qmd
+        text: Introduction
       - href: tools.qmd
         text: Tools
       - href: requirements.qmd
