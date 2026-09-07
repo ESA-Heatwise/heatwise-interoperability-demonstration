@@ -1,5 +1,6 @@
 ---
 title: Introduction
+label: sec-introduction
 ---
 
 # Introduction
@@ -18,7 +19,7 @@ The HEATWISE processors have been made to conform to the best practice by two me
 1. Using [`xcengine`](https://xcube-dev.github.io/xcengine/), a tool for converting Jupyter Notebooks into EOAPs. Xcengine generates the CWL document from an annotated Jupyter notebook.
 
 
-### Heatwise Software
+## Heatwise Software
 
 The following EOAPs have been created in the context of Heatwise:
 
@@ -38,15 +39,12 @@ The following EOAPs have been created in the context of Heatwise:
 
 : Earth Observaton Application Packages produced by HEATWISE {#tbl-software-products}
 
-### Demonstration
+## Demonstration
 
-This technical note contains a demonstration of adherence to interoperability best practice. All software products listed in @tbl-software-products are shown to adhere to [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0). The requirements and how each requirement is demonstrated is discussed in section
-<!-- TODO cross-reference -->
-[requirements](requirements.qmd).
+This technical note contains a demonstration of adherence to interoperability best practice. All software products listed in @tbl-software-products are shown to adhere to [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0). The requirements and how each requirement is demonstrated is discussed in @sec-requirements.
 
-The demonstration makes use of several tools for validating aspects of the best practice. An overview of the tools used is given in @tbl-tools. All tools are installed by following the instructions in the
-<!-- TODO cross-reference -->
-[installation](installation.qmd) instructions.
+The demonstration makes use of several tools for validating aspects of the best practice. An overview of the tools used is given in @tbl-tools. All tools are installed by following the instructions in @sec-installation.
+
 
 
 | Tool | Description | Purpose |
@@ -58,13 +56,9 @@ The demonstration makes use of several tools for validating aspects of the best 
 
 : Tools used in the demonstration {#tbl-tools tbl-colwidths="[20, 40, 40]"}
 
-**How to execute**
 
-- Clone git repo
-- Set up pixi
+The demonstrations for each of the EOAPs are documented in the later chapters (part "Software Products") of this technical note.
+To reproduce the results, the instructions in @sec-setup must be followed.
+Afterwards, the documentation can be re-rendered (generating new demonstration results) as described in @sec-rendering or each of the commands executed by hand.
 
-- Quarto render (to website, pdf, jupyter, ...)
-
-By hand:
-
-- Run staging script (`pixi stage`)
+All scripts used are part of the [same repository](https://github.com/ESA-Heatwise/heatwise-interoperability-demonstration) as this technical note and available in the `scripts` directory.
