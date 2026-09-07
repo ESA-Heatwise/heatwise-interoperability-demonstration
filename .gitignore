@@ -8,7 +8,9 @@ inputs
 outputs
 application-packages
 software
+*.ipynb_checkpoints
 
 
 /.quarto/
 **/*.quarto_ipynb
+**/*.quarto_ipynb*
