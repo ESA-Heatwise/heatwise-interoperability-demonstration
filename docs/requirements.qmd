@@ -1,34 +1,110 @@
 ---
-title: EOAP requirements
+filters:
+    - include-code-files
+
+number-depth: 2
+toc-depth: 2
 ---
+
+# EOAP requirements {#sec-requirements}
+
+This chapter gives an overview of the requirements of the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0), for the conformance classes
+
+- A.1. Conformance Class "Application"
+- A.2. Conformance Class "Application Staged Inputs"
+- A.3. Conformance Class "Application Staged Outputs"
+- A.4. Conformance Class "Application Package"
+- A.5. Conformance Class "Application Package Staged Inputs"
+- A.6. Conformance Class "Application Package Staged Outputs"
+
+The following conformance classes are left out, as they pose requirements to the executing platform which is out of scope of the demonstration:
+
+- A.7. Conformance Class "Platform"
+- A.8. Conformance Class "Platform Staged Inputs"
+- A.9. Conformance Class "Platform Staged Outputs"
+
+The numbering, naming and requirements are reproduced verbatim from the [OGC Best Practice Document](http://www.opengis.net/doc/BP/eoap/1.0) which is the authoritative source in case of any discrepancies with this document.
+
+In the following, the applicable requirements are stated with a short description how adherence to each requirement is demonstrated for the Heatwise EOAPs.
+For a description of the tools referenced in the demonstration, see @tbl-tools.
 
 ## Requirement 1: req/app/cmd-line
 
 > The Application SHALL be a non-interactive executable as a command-line application.
 
+The demonstration contains a command-line call to the docker container containing the application.
+Successfully executing the container image with no interactive inputs demonstrates this requirement.
+
 ## Requirement 2: req/app/container
 
 > The environment, libraries, binaries, executable and configuration files necessary to execute the Application SHALL be bundled in a container image.
+
+The demonstration contains a command-line call to the docker container containing the application.
+Successfully executing the container image demonstrates this requirement.
 
 ## Requirement 3: req/app/registry
 
 > The Application container image SHALL be accessible in a container registry.
 
-## Requirement 4: req/app/stac-input
+`skopeo` is used to query the metadata of each container image. If an image is not available in a registry, `skopeo` will fail.
+
+
+### Script
+
+The skopeo call is wrapped in a script `check-container-registry.sh`:
+
+```{.bash include="../scripts/check-container-registry.sh"}
+```
+
+
+### Example:
+
+The script fails when the container image is not found:
+
+```{bash}
+check-container-registry.sh quay.io/does-not-exist:1.0 || :
+```
+
+## Requirement 4: req/app/stac-input {#sec-req-app-stac-input}
 
 > An Application input argument that requires staged EO product files SHALL be defined as an argument that points to a folder where a STAC Catalog, named catalog.json, contains a list of one or more STAC Items and associated STAC Assets referencing the files.
+
+The inputs passed to the processor are shown to be directories containing a `catalog.json` and the CWL document is shown to process these inputs as type `directory`. The script to extract the inputs is shown in @sec-req-app-pck-stage-in-clt-stac.
+
+How the `catalog.json` is processed internally is not shown in the demonstration and can be inspected in the source code of each repository if required.
 
 ## Requirement 5: req/app/stac-out
 
 > An Application that creates EO product files to be stage-out SHALL generate a valid STAC Catalog, named catalog.json, and include the STAC Item(s) and corresponding STAC Assets pointing to the results of the processing.
 
+The STAC catalog and item produced by each EOAP are shown to be valid STAC with the `stac-validor` tool.
+
 ## Requirement 6: rec/app/stac-out-metadata
 
 > The STAC Catalog created by the Application SHALL include metadata elements for each STAC Item with at least their spatial (geometry, box) and temporal (datetime) properties.
 
+`yq` is used to extract the `geometry`, `bbox` and `datetime` properties from the STAC item produced by the EOAP.
+
+### Script
+
+The script fails, if any of `geometry`, `bbox` or `datetime` are not present.
+
+```{bash include="../scripts/extract-output-keys-from-stac-item.sh"}
+```
+
 ## Requirement 7: req/app-pck/cwl
 
 > The Application Package SHALL be a valid CWL document with a “Workflow” class and one or more “CommandLineTool” classes.
+
+The CWL document is validated using `cwltool` which provides a `--validate` option for this purpose.
+
+`yq` is used to extract the classes present in the CWL graph. The requirement is satisfied, if there is exactly one `Workflow` CWL object and one or more `CommandLineTool` CWL objects.
+
+### Script
+
+```{.bash include="../scripts/show-cwl-graph-classes.sh"}
+
+```
 
 ## Requirement 8: req/app-pck/clt
 
@@ -39,12 +115,31 @@ title: EOAP requirements
 > — Environment requirements (“requirements”)
 > — Docker information (“DockerRequirement”)
 
+
+`yq` is used to extract the keys mandated by this requirement.
+
+### Script
+
+The script fails if not all required keys are present.
+
+```{.bash include="../scripts/check-commandlinetool-fields.sh"}
+```
+
 ## Requirement 9: req/app-pck/wf
 
 > The Application Package CWL Workflow class SHALL contain the following elements:
 > — Identifier (“id”)
 > — Title (“label”)
 > — Abstract (“doc”)
+
+`yq` is used to extract the keys mandated by this requirement.
+
+### Script
+
+The script fails if not all required keys are present.
+
+```{.bash include="../scripts/check-workflow-fields.sh"}
+```
 
 
 ## Requirement 10: req/app-pck/wf-inputs
@@ -54,20 +149,63 @@ title: EOAP requirements
 > — Title (“label”)
 > — Abstract (“doc”)
 
+`yq` is used to extract the `inputs` field of the CWL workflow and validate that the keys mandated by this requirement are present.
+
+### Script
+
+The script fails if not all required keys are present.
+
+```{.bash include="../scripts/check-workflow-input-fields.sh"}
+```
+
 ## Requirement 11: req/app-pck/metadata
 
 > The Application Package CWL Workclass classes SHALL include additional metadata as defined in Table 1
 
 > Required in table 1: version
 
-## Requirement 12: req/app-pck-stage-in/clt-stac
+`yq` is used to extract the `s:version` field of the CWL document. `version` is the only mandatory field in the `table 1` of the best practice document.
+
+### Script
+
+```{.bash include="../scripts/check-version.sh"}
+```
+
+
+## Requirement 12: req/app-pck-stage-in/clt-stac {#sec-req-app-pck-stage-in-clt-stac}
 
 > All input parameters of the CWL ComandLineTool that require the staging of EO products SHALL be of type Directory.
 
-## Requirement 13: req/app-pck-stage-in/wf-stac
+`yq` is used to extract all inputs with type `Directory` from the CWL `CommandLineTool` object. This shows that each processor indeed processes EO data inputs. These inputs should match those provided with a `catalog.json` in the demonstration of @sec-req-app-stac-input.
+
+### Script
+
+The script accepts as a first parameter the class of the CWL object (`Workflow` or `Directory`) to be checked. This is done, so that the same script can be used for @sec-req-app-pck-stage-in-wf-stac.
+
+```{.bash include="../scripts/extract-directory-inputs-from.sh"}
+```
+
+## Requirement 13: req/app-pck-stage-in/wf-stac {#sec-req-app-pck-stage-in-wf-stac}
 
 > Input parameters of the CWL Workflow that require the staging of EO products SHALL be of type Directory.
+
+`yq` is used to extract all inputs with type `Directory` from the CWL `Workflow` object. This shows that each processor indeed processes EO data inputs. These inputs should match those provided with a `catalog.json` in the demonstration of @sec-req-app-stac-input.
+
+The same script used for @sec-req-app-pck-stage-in-clt-stac is used to verify this requirement.
 
 ## Requirement 14: req/app-pck-stage-out/output-stac
 
 > The outputs field of the CommandLineTool that requires the stage-out of EO products SHALL retrieve all the files produced in the working directory.
+
+The `outputs` field of the CWL `CommandLineTool` are extracted and shown to output all contents of the working directory with a glob filter of `"."` (representing the current directory).
+
+
+`yq` is used to extract the fields of interest from the CWL document.
+
+### Script
+
+The first call to `yq` extracts the `outputs` field, the second one makes sure the script fails if the `outputs` field does not extract the entire contents of the working directory.
+
+
+```{.bash include="../scripts/extract-commandlinetool-outputs.sh"}
+```
