@@ -6,6 +6,12 @@ platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
+render-notebooks = { cmd = ["quarto", "render", "--profile", "demonstration", "--to", "ipynb", "--output-dir", "../_notebooks"], default-environment = "dev", cwd="docs"}
+render-website = { cmd = ["quarto", "render", "--profile", "book", "--output-dir", "../_site"], default-environment = "dev", cwd="docs"}
+render-pdf = { cmd = ["quarto", "render", "--profile", "book", "--to", "typst", "--output-dir", "../_book_pdf"], default-environment = "dev", cwd="docs"}
+clean = { cmd = ["rm", "-rf", "_notebooks", "_site", "_book_pdf", "_freeze"], cwd="."}
+
+show-notebooks = { cmd = ["jupyter", "lab"], default-environment = "dev", cwd="_notebooks"}
 
 [dependencies]
 bash_kernel = ">=0.10.0,<0.11"
