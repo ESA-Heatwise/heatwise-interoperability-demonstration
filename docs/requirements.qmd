@@ -53,8 +53,16 @@ Successfully executing the container image demonstrates this requirement.
 
 The skopeo call is wrapped in a script `check-container-registry.sh`:
 
+::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/check-container-registry.sh"}
 ```
+:::
+
+::: {.content-visible unless-format="html"}
+```{bash}
+cat $(which check-container-registry.sh)
+```
+:::
 
 
 ### Example:
@@ -89,8 +97,16 @@ The STAC catalog and item produced by each EOAP are shown to be valid STAC with 
 
 The script fails, if any of `geometry`, `bbox` or `datetime` are not present.
 
-```{bash include="../scripts/extract-output-keys-from-stac-item.sh"}
+::: {.content-visible when-format="html"}
+```{.bash include="../scripts/extract-output-keys-from-stac-item.sh"}
 ```
+:::
+
+::: {.content-visible unless-format="html"}
+```{bash}
+cat $(which extract-output-keys-from-stac-item.sh)
+```
+:::
 
 ## Requirement 7: req/app-pck/cwl
 
@@ -102,9 +118,15 @@ The CWL document is validated using `cwltool` which provides a `--validate` opti
 
 ### Script
 
+::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/show-cwl-graph-classes.sh"}
-
 ```
+:::
+::: {.content-visible unless-format="html"}
+```{bash}
+cat $(which show-cwl-graph-classes.sh)
+```
+:::
 
 ## Requirement 8: req/app-pck/clt
 
@@ -122,8 +144,15 @@ The CWL document is validated using `cwltool` which provides a `--validate` opti
 
 The script fails if not all required keys are present.
 
+::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/check-commandlinetool-fields.sh"}
 ```
+:::
+::: {.content-visible unless-format="html"}
+```{bash}
+cat $(which check-commandlinetool-fields.sh)
+```
+:::
 
 ## Requirement 9: req/app-pck/wf
 
@@ -138,8 +167,15 @@ The script fails if not all required keys are present.
 
 The script fails if not all required keys are present.
 
+::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/check-workflow-fields.sh"}
 ```
+:::
+::: {.content-visible unless-format="html"}
+```{bash}
+cat $(which check-workflow-fields.sh)
+```
+:::
 
 
 ## Requirement 10: req/app-pck/wf-inputs
@@ -155,8 +191,15 @@ The script fails if not all required keys are present.
 
 The script fails if not all required keys are present.
 
+::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/check-workflow-input-fields.sh"}
 ```
+:::
+::: {.content-visible unless-format="html"}
+```{bash}
+cat $(which check-workflow-input-fields.sh)
+```
+:::
 
 ## Requirement 11: req/app-pck/metadata
 
@@ -168,8 +211,15 @@ The script fails if not all required keys are present.
 
 ### Script
 
+::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/check-version.sh"}
 ```
+:::
+::: {.content-visible unless-format="html"}
+```{bash}
+cat $(which check-version.sh)
+```
+:::
 
 
 ## Requirement 12: req/app-pck-stage-in/clt-stac {#sec-req-app-pck-stage-in-clt-stac}
@@ -182,8 +232,15 @@ The script fails if not all required keys are present.
 
 The script accepts as a first parameter the class of the CWL object (`Workflow` or `Directory`) to be checked. This is done, so that the same script can be used for @sec-req-app-pck-stage-in-wf-stac.
 
+::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/extract-directory-inputs-from.sh"}
 ```
+:::
+::: {.content-visible unless-format="html"}
+```{bash}
+cat $(which extract-directory-inputs-from.sh)
+```
+:::
 
 ## Requirement 13: req/app-pck-stage-in/wf-stac {#sec-req-app-pck-stage-in-wf-stac}
 
@@ -207,5 +264,12 @@ The `outputs` field of the CWL `CommandLineTool` are extracted and shown to outp
 The first call to `yq` extracts the `outputs` field, the second one makes sure the script fails if the `outputs` field does not extract the entire contents of the working directory.
 
 
+::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/extract-commandlinetool-outputs.sh"}
 ```
+:::
+```{bash}
+cat $(which extract-commandlinetool-outputs.sh)
+```
+::: {.content-visible unless-format="html"}
+:::
