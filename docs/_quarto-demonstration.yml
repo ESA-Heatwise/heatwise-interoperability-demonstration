@@ -1,0 +1,7 @@
+project:
+  type: default
+  render:
+    - software_products/combined_hotspots_materials.qmd
+
+format:
+  ipynb: default
