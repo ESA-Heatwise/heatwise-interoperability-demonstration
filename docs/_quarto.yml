@@ -3,11 +3,14 @@ project:
 
 book:
   title: "Heatwise interoperability demonstration"
+  author: "Hannes Neuschmidt"
+  date: 2026-09-07
   chapters:
     - href: index.qmd
     - href: requirements.qmd
     - href: setup.qmd
     - part: "Software Products"
+      identifier: part-software
       chapters:
       - href: software_products/combined_hotspots_materials.qmd
         text: Combined Hotspots and Materials product
@@ -20,6 +23,4 @@ format:
       - brand
     css: styles.css
     toc: true
-
-
 
