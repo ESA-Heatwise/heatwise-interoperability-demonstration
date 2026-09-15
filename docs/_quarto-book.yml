@@ -12,7 +12,13 @@ book:
     - part: "Software Products"
       identifier: part-software
       chapters:
+      - href: software_products/hotspots.qmd
+        text: Hotspots
+      - href: software_products/inertia.qmd
+        text: Apparent Thermal Inertia
       - href: software_products/combined_hotspots_materials.qmd
-        text: Combined Hotspots and Materials product
+        text: Combined Hotspots and Materials
+      - href: software_products/unmixing.qmd
+        text: HySUPP Unmixing
 
 

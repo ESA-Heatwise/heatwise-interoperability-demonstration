@@ -27,6 +27,8 @@ shapely = ">=2.1.2,<3"
 cwltool = ">=3.2.20260413085819,<4"
 skopeo = ">=1.24.0,<2"
 jupyterlab = ">=4.6.3,<5"
+xarray = ">=2026.7.0,<2027"
+zarr = ">=3.3.0,<4"
 
 [environments]
 dev = ["dev", "docs"]

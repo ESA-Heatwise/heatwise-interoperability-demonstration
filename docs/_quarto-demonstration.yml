@@ -1,7 +1,10 @@
 project:
   type: default
   render:
+    - software_products/hotspots.qmd
+    - software_products/inertia.qmd
     - software_products/combined_hotspots_materials.qmd
+    - software_products/unmixing.qmd
 
 format:
   ipynb: default
