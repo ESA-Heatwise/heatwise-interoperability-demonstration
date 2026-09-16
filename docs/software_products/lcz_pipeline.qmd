@@ -1,10 +1,13 @@
 ---
-title: Hotspots
+title: LCZ Full Pipeline
 ---
 
 ## Introduction
 
-The following sections demonstrate that the HEATWISE Hot- and Coldspot detection Software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
+The following sections demonstrate that the HEATWISE Local Climate Zones classification (full pipeline) software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
+
+> In this demonstration, only the inference step of the LCZ classification algorithm is presented.
+> The repository contains another EOAP for training.
 
 The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requiremnt.
 
@@ -32,12 +35,11 @@ Set environment variables to software, cwl documents, inputs and outputs.
 ```{bash}
 set -o pipefail
 set -x
-SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/lstm-wp3-products/products/hotspots
-CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise-hotspots.cwl
-INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/hotspots
+SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-lcz-pipeline
+CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_pipeline_packed.cwl
+INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/lcz-pipeline
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/lstm-wp3-products-hotspots:latest
-OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/hotspots
+OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/lcz-pipeline
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
 set +x
@@ -53,26 +55,11 @@ The first set of requirements is concerned with how the software is executed. It
 
 ### Running as a docker container
 
-We can run the (dockerized) software directly, without using the CWL machinery with `docker run`:
+The LCZ pipeline is a combination of the steps showcased in the last three chapters. All the docker images used in the CWL CommandLineTool specifications have already been showcased:
 
-```{bash}
-mkdir -p "$OUTPUT_PATH"
-docker run --rm \
-    --user "$(id -u):$(id -g)" \
-    --workdir=/home/mambauser/wd \
-    -v $SOFTWARE_ROOT/data:/home/mambauser/data \
-    -v $SOFTWARE_ROOT/inputs:/home/mambauser/wd/inputs \
-    -v "$OUTPUT_PATH":/home/mambauser/wd $DOCKER_IMAGE_ID \
-    || { FAIL_REQ_1=1; FAIL_REQ_2=1; }
-
-ls -ltrAh --color=never $OUTPUT_PATH
-```
-
-The image should not only be available locally, but also in a container registry.
-
-```{bash}
-check-container-registry.sh $DOCKER_IMAGE_ID || FAIL_REQ_3=1
-```
+1. LCZ Preprocessing @sec-lcz-preprocessing
+1. LCZ Patch extraction @sec-lcz-patch-extraction
+1. LCZ Classification @sec-lcz-classification
 
 
 #### Requirements Validated
@@ -110,12 +97,20 @@ The EOAP can be executed from its CWL description with `cwltool`.
 
 ```{bash}
 cwltool \
-    --disable-color \
-    --outdir "$OUTPUT_PATH/cwlruns" \
-    "$CWL_PATH"#hotspot_detection \
-    \
-    --lst $INPUT_PATH/lst \
-    || FAIL_REQ_7=1
+  --disable-color \
+  --outdir "$OUTPUT_PATH/cwlruns" \
+   $CWL_PATH \
+   --prep_config $SOFTWARE_ROOT/examples/run_all_config_docker.yaml \
+   --prep_input_catalog $INPUT_PATH/Berlin_prep \
+   --sentinel2 $INPUT_PATH/Berlin_prep/Berlin_S2.tif \
+   --patch_config_template $SOFTWARE_ROOT/examples/patch_config_template.yaml \
+   --labels_dir $INPUT_PATH/Berlin_labels \
+   --labels_basename Berlin_labels \
+   --train_config $SOFTWARE_ROOT/examples/train_config_sample.yaml \
+   --predict_config $SOFTWARE_ROOT/examples/predict_config_sample.yaml \
+   --experiment_name HSI-BS \
+  || FAIL_REQ_7=1
+
 ```
 
 Cwltool creates a new output directory with a random name when it is run.
@@ -138,19 +133,20 @@ echo "Path to last cwl run: $CWLRUN_PATH"
 tree -n $CWLRUN_PATH || :
 ```
 
-```{bash}
-python -c "import xarray as xr; \
+```{.bash}
+python -c "import numpy as np; \
     import matplotlib.pyplot as plt; \
-    ds = xr.open_zarr(\"$CWLRUN_PATH/hw_lst_clusters/hw_lst_clusters.zarr\"); \
-    fig, ax = plt.subplots(1, 1); \
-    ds['lst_hotspots'].plot(ax=ax, cmap='Reds', add_colorbar=False); \
-    ds['lst_coldspots'].plot(ax=ax, cmap='Blues', add_colorbar=False); \
-    ax.set_title('Hot- and Coldspots'); \
-    ax.set_aspect(1); \
-    plt.savefig('lst_hotcoldspots.png')" || :
+    import xarray as xr; \
+    import rioxarray as rio; \
+    ds_hsi=rio.open_rasterio(\"$CWLRUN_PATH/03_hsi_final/hsi_bs/Berlin_hsi_bs.tif\"); \
+    fig, ax = plt.subplots(); \
+    ds_hsi_subset = ds_hsi.sel(band=[7, 3, 2]); \
+    xr.where(ds_hsi_subset < 0, np.nan, ds_hsi_subset ** 0.5).plot.imshow(ax=ax); \
+    fig.savefig('hsi_preprocessed.png'); \
+    ds_hsi.close()" || :
 ```
 
-![LST Hot-(red) and Coldspots (blue)](lst_hotcoldspots.png)
+![Preprocessed HSI data](hsi_preprocessed.png)
 
 
 ## STAC input / output
@@ -182,7 +178,7 @@ Using the recursive validation, both the catalog and item are confirmed to be va
 The EOAP best practice mandates that the item contains at least `geometry, bbox` and `datetime` keys.
 
 ```{bash}
-extract-output-keys-from-stac-item.sh $CWLRUN_PATH/hw_lst_clusters/hw_lst_clusters.json || FAIL_REQ_6=1
+extract-output-keys-from-stac-item.sh $CWLRUN_PATH/lcz_prediction_item.json || FAIL_REQ_6=1
 ```
 
 

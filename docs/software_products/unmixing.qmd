@@ -59,18 +59,19 @@ We can run the (dockerized) software directly, without using the CWL machinery w
 mkdir -p "$OUTPUT_PATH"
 
 docker run --rm \
-  -v $INPUT_PATH/data:/data \
-  -v $OUTPUT_PATH:/results \
-  $DOCKER_IMAGE_ID \
-  processor.py \
-  --input-image /data/Sepolia/Sepolia_CHIME_Thermopolis_v2_COG.tif \
-  --endmembers /data/Sepolia/endmembers_sepolia.xlsx \
-  --wavelengths-txt /data/Sepolia/Sepolia_CHIME_Thermopolis_v2_wavelengths.txt \
-  --output-dir /results/sepolia \
-  --output-prefix Sepolia_FCLS \
-  --scale-factor 1.0 \
-  --min-abundance 0.0 \
-  --log-every 1000
+    -v $INPUT_PATH/data:/data \
+    -v $OUTPUT_PATH:/results \
+    $DOCKER_IMAGE_ID \
+    processor.py \
+    --input-image /data/Sepolia/Sepolia_CHIME_Thermopolis_v2_COG.tif \
+    --endmembers /data/Sepolia/endmembers_sepolia.xlsx \
+    --wavelengths-txt /data/Sepolia/Sepolia_CHIME_Thermopolis_v2_wavelengths.txt \
+    --output-dir /results/sepolia \
+    --output-prefix Sepolia_FCLS \
+    --scale-factor 1.0 \
+    --min-abundance 0.0 \
+    --log-every 1000 \
+    || { FAIL_REQ_1=1; FAIL_REQ_2=1; }
 ```
 
 The image should not only be available locally, but also in a container registry.
@@ -146,19 +147,19 @@ echo "Path to last cwl run: $CWLRUN_PATH"
 tree -n $CWLRUN_PATH || :
 ```
 
-```{.bash}
-python -c "import xarray as xr; \
-    import matplotlib.pyplot as plt; \
-    ds = xr.open_zarr(\"$CWLRUN_PATH/hw_lst_clusters/hw_lst_clusters.zarr\"); \
-    fig, ax = plt.subplots(1, 1); \
-    ds['lst_hotspots'].plot(ax=ax, cmap='Reds', add_colorbar=False); \
-    ds['lst_coldspots'].plot(ax=ax, cmap='Blues', add_colorbar=False); \
-    ax.set_title('Hot- and Coldspots'); \
-    ax.set_aspect(1); \
-    plt.savefig('lst_hotcoldspots.png')" || :
+```{bash}
+python -c "import matplotlib.pyplot as plt; \
+    import xarray as xr; \
+    import rioxarray as rio; \
+    ds=rio.open_rasterio(\"$CWLRUN_PATH/Sepolia_FCLS_classification_map_COG.tif\"); \
+    fig, ax=plt.subplots(); \
+    ds.plot(ax=ax, cmap='Set1_r', add_colorbar=False); \
+    ax.set(aspect=1, xticks=[], yticks=[], title='', xlabel='', ylabel=''); \
+    fig.savefig('classification_map.png'); \
+    ds.close()" || :
 ```
 
-![LST Hot-(red) and Coldspots (blue)](lst_hotcoldspots.png)
+![Most abundant material map](classification_map.png)
 
 
 ## STAC input / output

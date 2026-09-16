@@ -5,6 +5,7 @@ project:
     - software_products/inertia.qmd
     - software_products/combined_hotspots_materials.qmd
     - software_products/unmixing.qmd
+    - software_products/lcz_preprocessing.qmd
 
 format:
   ipynb: default

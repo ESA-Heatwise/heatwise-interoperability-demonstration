@@ -1,10 +1,8 @@
----
-title: Hotspots
----
+# LCZ Patch Extraction {#sec-lcz-patch-extraction}
 
 ## Introduction
 
-The following sections demonstrate that the HEATWISE Hot- and Coldspot detection Software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
+The following sections demonstrate that the HEATWISE Local Climate Zones patch extraction software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
 
 The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requiremnt.
 
@@ -32,12 +30,12 @@ Set environment variables to software, cwl documents, inputs and outputs.
 ```{bash}
 set -o pipefail
 set -x
-SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/lstm-wp3-products/products/hotspots
-CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise-hotspots.cwl
-INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/hotspots
+SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-patch-extraction
+CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_patch_extraction.cwl
+INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/patch-extraction
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/lstm-wp3-products-hotspots:latest
-OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/hotspots
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-patch-extraction:eoap-compliance
+OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/patch-extraction
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
 set +x
@@ -57,15 +55,17 @@ We can run the (dockerized) software directly, without using the CWL machinery w
 
 ```{bash}
 mkdir -p "$OUTPUT_PATH"
-docker run --rm \
-    --user "$(id -u):$(id -g)" \
-    --workdir=/home/mambauser/wd \
-    -v $SOFTWARE_ROOT/data:/home/mambauser/data \
-    -v $SOFTWARE_ROOT/inputs:/home/mambauser/wd/inputs \
-    -v "$OUTPUT_PATH":/home/mambauser/wd $DOCKER_IMAGE_ID \
-    || { FAIL_REQ_1=1; FAIL_REQ_2=1; }
 
-ls -ltrAh --color=never $OUTPUT_PATH
+docker run --rm \
+    -v "$INPUT_PATH/Berlin:/input:ro" \
+    -v "$OUTPUT_PATH:/output" \
+    --user "$(id -u):$(id -g)" \
+    $DOCKER_IMAGE_ID \
+    python /app/processor.py \
+    --config /app/examples/sample_config_docker.yaml \
+    --input-catalog /input/catalog.json \
+    --output-h5 /output/Berlin_patches.h5 \
+    || { FAIL_REQ_1=1; FAIL_REQ_2=1; }
 ```
 
 The image should not only be available locally, but also in a container registry.
@@ -110,12 +110,13 @@ The EOAP can be executed from its CWL description with `cwltool`.
 
 ```{bash}
 cwltool \
-    --disable-color \
-    --outdir "$OUTPUT_PATH/cwlruns" \
-    "$CWL_PATH"#hotspot_detection \
-    \
-    --lst $INPUT_PATH/lst \
-    || FAIL_REQ_7=1
+  --disable-color \
+  --outdir "$OUTPUT_PATH/cwlruns" \
+   $CWL_PATH \
+  --input_catalog $INPUT_PATH/Berlin \
+  --output_h5 Berlin_patches.h5 \
+  --config $SOFTWARE_ROOT/examples/sample_config_docker.yaml \
+  || FAIL_REQ_7=1
 ```
 
 Cwltool creates a new output directory with a random name when it is run.
@@ -137,21 +138,6 @@ echo "Path to last cwl run: $CWLRUN_PATH"
 ```{bash}
 tree -n $CWLRUN_PATH || :
 ```
-
-```{bash}
-python -c "import xarray as xr; \
-    import matplotlib.pyplot as plt; \
-    ds = xr.open_zarr(\"$CWLRUN_PATH/hw_lst_clusters/hw_lst_clusters.zarr\"); \
-    fig, ax = plt.subplots(1, 1); \
-    ds['lst_hotspots'].plot(ax=ax, cmap='Reds', add_colorbar=False); \
-    ds['lst_coldspots'].plot(ax=ax, cmap='Blues', add_colorbar=False); \
-    ax.set_title('Hot- and Coldspots'); \
-    ax.set_aspect(1); \
-    plt.savefig('lst_hotcoldspots.png')" || :
-```
-
-![LST Hot-(red) and Coldspots (blue)](lst_hotcoldspots.png)
-
 
 ## STAC input / output
 
@@ -182,7 +168,7 @@ Using the recursive validation, both the catalog and item are confirmed to be va
 The EOAP best practice mandates that the item contains at least `geometry, bbox` and `datetime` keys.
 
 ```{bash}
-extract-output-keys-from-stac-item.sh $CWLRUN_PATH/hw_lst_clusters/hw_lst_clusters.json || FAIL_REQ_6=1
+extract-output-keys-from-stac-item.sh $CWLRUN_PATH/Berlin-patches_item.json || FAIL_REQ_6=1
 ```
 
 

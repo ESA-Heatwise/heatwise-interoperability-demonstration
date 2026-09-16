@@ -49,8 +49,8 @@ stage_hysupp() {
 stage_lcz() {
     PREP_ROOT="$SOFTWARE_PATH/heatwise-hsi-lst-prep"
     PATCH_ROOT="$SOFTWARE_PATH/heatwise-patch-extraction"
-    CLASSIFICATION_ROOT="$SOFTWARE_PATH/heatwise-lcz-classificaton"
-    PIPELINE_ROOT="$SOFTWARE_PATH/pipeline"
+    CLASSIFICATION_ROOT="$SOFTWARE_PATH/heatwise-lcz-classification"
+    PIPELINE_ROOT="$SOFTWARE_PATH/heatwise-lcz-pipeline"
 
     git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-hsi-lst-prep.git $PREP_ROOT
     git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-patch-extraction.git $PATCH_ROOT
@@ -62,12 +62,14 @@ stage_lcz() {
     cp $PATCH_ROOT/heatwise_patch_extraction.cwl "$CWL_PATH/"
     cp $CLASSIFICATION_ROOT/heatwise_lcz_predict.cwl "$CWL_PATH/"
     cp $CLASSIFICATION_ROOT/heatwise_lcz_train.cwl "$CWL_PATH/"
-    cp $PIPELINE_ROOT/heatwise_pipeline.cwl "$CWL_PATH/"
+    cwltool --pack $PIPELINE_ROOT/heatwise_pipeline.cwl > "$CWL_PATH/heatwise_pipeline_packed.cwl"
 
     cp -r $PREP_ROOT/examples/stac_input/* "$INPUTS_PATH/hsi-lst-prep/"
+    cp -r $PREP_ROOT/data "$INPUTS_PATH/hsi-lst-prep/"
     cp -r $PATCH_ROOT/data/Berlin "$INPUTS_PATH/patch-extraction/"
     cp -r $CLASSIFICATION_ROOT/data/Berlin "$INPUTS_PATH/lcz-classification/"
     cp -r $PIPELINE_ROOT/data/Berlin_prep "$INPUTS_PATH/lcz-pipeline/"
+    cp -r $PIPELINE_ROOT/data/Berlin_labels "$INPUTS_PATH/lcz-pipeline/"
     # cp -r $PIPELINE_ROOT/data/Berlin_labels "$INPUTS_PATH/lcz-pipeline/"
 }
 
@@ -82,5 +84,6 @@ if [[ $1 == "clean" ]]; then
 else
     stage_lstm_wp3_products
     stage_hysupp
+    stage_lcz
 fi
 
