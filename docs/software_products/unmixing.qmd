@@ -61,6 +61,7 @@ mkdir -p "$OUTPUT_PATH"
 docker run --rm \
     -v $INPUT_PATH/data:/data \
     -v $OUTPUT_PATH:/results \
+    --user "$(id -u):$(id -g)" \
     $DOCKER_IMAGE_ID \
     processor.py \
     --input-image /data/Sepolia/Sepolia_CHIME_Thermopolis_v2_COG.tif \

@@ -107,10 +107,9 @@ cwltool \
    --labels_dir $INPUT_PATH/Berlin_labels \
    --labels_basename Berlin_labels \
    --train_config $SOFTWARE_ROOT/examples/train_config_sample.yaml \
-   --predict_config $SOFTWARE_ROOT/examples/predict_config_sample.yaml \
+   --predict_config $SOFTWARE_ROOT/examples/predict_config_template.yaml \
    --experiment_name HSI-BS \
   || FAIL_REQ_7=1
-
 ```
 
 Cwltool creates a new output directory with a random name when it is run.
