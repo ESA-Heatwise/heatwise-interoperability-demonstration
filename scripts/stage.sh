@@ -12,7 +12,7 @@ mkdir -p $CWL_PATH
 
 stage_lstm_wp3_products() {
     REPO_BASE="$SOFTWARE_PATH/lstm-wp3-products"
-    git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/lstm-wp3-products.git "$REPO_BASE"
+    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/lstm-wp3-products.git "$REPO_BASE"
     PRODUCTS_BASE="$REPO_BASE/products"
 
     # hotspots
@@ -35,7 +35,7 @@ stage_lstm_wp3_products() {
 stage_hysupp() {
     REPO_BASE=$SOFTWARE_PATH/heatwise-hysupp-unmixing
 
-    git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-hysupp-unmixing.git "$REPO_BASE"
+    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-hysupp-unmixing.git "$REPO_BASE"
 
     # cwl
     cp "$REPO_BASE/heatwise_hysupp_unmixing.cwl" "$CWL_PATH/"
@@ -52,10 +52,10 @@ stage_lcz() {
     CLASSIFICATION_ROOT="$SOFTWARE_PATH/heatwise-lcz-classification"
     PIPELINE_ROOT="$SOFTWARE_PATH/heatwise-lcz-pipeline"
 
-    git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-hsi-lst-prep.git $PREP_ROOT
-    git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-patch-extraction.git $PATCH_ROOT
-    git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-lcz-classification.git $CLASSIFICATION_ROOT
-    git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-lcz-pipeline.git $PIPELINE_ROOT
+    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-hsi-lst-prep.git $PREP_ROOT
+    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-patch-extraction.git $PATCH_ROOT
+    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-lcz-classification.git $CLASSIFICATION_ROOT
+    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-lcz-pipeline.git $PIPELINE_ROOT
 
     mkdir -p $INPUTS_PATH/{hsi-lst-prep,patch-extraction,lcz-classification,lcz-pipeline}
     cp $PREP_ROOT/heatwise_hsi_lst_prep.cwl "$CWL_PATH/"
@@ -74,7 +74,7 @@ stage_lcz() {
 
 stage_pftnc() {
     REPO_BASE=$SOFTWARE_PATH/heatwise-pftnc
-    git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-pftnc.git "$REPO_BASE"
+    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-pftnc.git "$REPO_BASE"
 
     cp "$REPO_BASE/eoap/pftnc.cwl" "$CWL_PATH/"
 
