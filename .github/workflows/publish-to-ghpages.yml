@@ -39,7 +39,7 @@ jobs:
         with:
           path: _site
 
-  deploy:
+  deploy-website:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -54,3 +54,19 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+  upload-pdf:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: render PDF
+        run: |
+          pixi run render-pdf
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: technical-note
+          path: _book_pdf/Heatwise-interoperability-demonstration.pdf
+          overwrite: true
+          archive: false
+          if-no-files-found: warn
