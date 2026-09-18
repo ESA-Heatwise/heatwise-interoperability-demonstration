@@ -34,7 +34,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-pftnc
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/pftnc.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/pftnc
 
-DOCKER_IMAGE_ID=heatwise-pftnc-inference:latest
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-pftnc-inference:latest
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/pftnc
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
