@@ -4,7 +4,7 @@
 
 The following sections demonstrate that the HEATWISE Phytoplankton Functional Types now-casting Software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
 
-The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requiremnt.
+The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requirement.
 
 The demostration proceeds in the following steps:
 
@@ -34,7 +34,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-pftnc
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/pftnc.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/pftnc
 
-DOCKER_IMAGE_ID=pftnc_inference:2026.09.17.11.49.18
+DOCKER_IMAGE_ID=heatwise-pftnc-inference:latest
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/pftnc
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
