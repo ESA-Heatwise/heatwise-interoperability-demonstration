@@ -70,7 +70,16 @@ stage_lcz() {
     cp -r $CLASSIFICATION_ROOT/data/Berlin "$INPUTS_PATH/lcz-classification/"
     cp -r $PIPELINE_ROOT/data/Berlin_prep "$INPUTS_PATH/lcz-pipeline/"
     cp -r $PIPELINE_ROOT/data/Berlin_labels "$INPUTS_PATH/lcz-pipeline/"
-    # cp -r $PIPELINE_ROOT/data/Berlin_labels "$INPUTS_PATH/lcz-pipeline/"
+}
+
+stage_pftnc() {
+    REPO_BASE=$SOFTWARE_PATH/heatwise-pftnc
+    git clone --branch "$GIT_REF" git@github.com:ESA-Heatwise/heatwise-pftnc.git "$REPO_BASE"
+
+    cp "$REPO_BASE/eoap/pftnc.cwl" "$CWL_PATH/"
+
+    mkdir -p $INPUTS_PATH/pftnc
+    cp -r "$REPO_BASE/input/berlin_muggelsee" "$INPUTS_PATH/pftnc/"
 }
 
 clean() {
@@ -85,5 +94,6 @@ else
     stage_lstm_wp3_products
     stage_hysupp
     stage_lcz
+    stage_pftnc
 fi
 

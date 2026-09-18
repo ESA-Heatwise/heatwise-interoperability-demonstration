@@ -11,7 +11,7 @@ All software is provided as Earth Observation Application Package (EOAP) as desc
 An EOAP consists of a Common Workflow Language (CWL) document which describes the inputs, outputs and processing steps of the software, with software made available in a container image referenced
 in the CWL document.
 <!-- TODO: Check if we need to use a proper cross-reference here for PDF output.-->
-The requirements imposed by the OGC Best Practice are detailed in the section [requirements](requirements.qmd).
+The requirements imposed by the OGC Best Practice are detailed in @sec-requirements.
 
 The HEATWISE processors have been made to conform to the best practice by two methods.
 

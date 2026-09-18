@@ -28,4 +28,6 @@ book:
         text: LCZ Classification
       - href: software_products/lcz_pipeline.qmd
         text: LCZ Full Pipeline
+      - href: software_products/pftnc.qmd
+        text: PFTNC
 

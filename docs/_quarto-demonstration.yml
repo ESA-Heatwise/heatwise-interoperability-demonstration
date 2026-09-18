@@ -6,6 +6,9 @@ project:
     - software_products/combined_hotspots_materials.qmd
     - software_products/unmixing.qmd
     - software_products/lcz_preprocessing.qmd
+    - software_products/lcz_patch_extraction.qmd
+    - software_products/lcz_pipeline.qmd
+    - software_products/pftnc.qmd
 
 format:
   ipynb: default

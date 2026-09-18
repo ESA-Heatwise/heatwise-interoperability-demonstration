@@ -60,7 +60,7 @@ pixi run stage
 This populates the `software`, `application-packages` and `inputs` directories under the project root. Later, outputs of the processors will be collected in the `outputs` directory.
 
 ```{bash}
-ls -l --color=never {software,inputs,application-packages}
+tree -n -L 1 {software,inputs,application-packages}
 ```
 
 ## Rendering {#sec-rendering}

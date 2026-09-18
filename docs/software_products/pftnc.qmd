@@ -1,0 +1,321 @@
+# PFTNC {#sec-pftnc}
+
+## Introduction
+
+The following sections demonstrate that the HEATWISE Phytoplankton Functional Types now-casting Software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
+
+The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requiremnt.
+
+The demostration proceeds in the following steps:
+
+- Execute the software as docker container and as CWL document (the EOAP)
+- Show that STAC inputs and outputs are handled by the application as required
+- Show that the CWL document is structured as required
+- Show that STAC inputs and outputs are declared in the CWL as required
+
+After each step, the requirements shown are listed.
+
+@sec-requirements contains an overview of all requirements in order and how they are demonstrated in this document. It furthermore shows all utility scripts used in this demonstration. For brevity, the content of utility scripts only shown in the requirements overview and not in each demonstration.
+
+## Preparation
+
+Activate the pixi environment to make validation tools and scripts available.
+
+```{bash}
+eval "$(pixi shell-hook --change-ps1 false)"
+```
+
+Set environment variables to software, cwl documents, inputs and outputs.
+
+```{bash}
+set -o pipefail
+set -x
+SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-pftnc
+CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/pftnc.cwl
+INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/pftnc
+
+DOCKER_IMAGE_ID=pftnc_inference:2026.09.17.11.49.18
+OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/pftnc
+
+ls -ltrAh --color=never "$SOFTWARE_ROOT"
+set +x
+```
+
+## Running the software
+
+The first set of requirements is concerned with how the software is executed. It shall be
+
+- Runnable as a non-interactive script
+- Bundled in (Docker) container
+- Executable as a CWL Workflow containing at least one CWL CommandLineTool
+
+### Running as a docker container
+
+We can run the (dockerized) software directly, without using the CWL machinery with `docker run`:
+
+```{bash}
+mkdir -p "$OUTPUT_PATH"
+docker run --rm \
+    --user "$(id -u):$(id -g)" \
+    --workdir /home/mambauser/wd \
+    --env HOME=/home/mambauser/wd \
+    --volume "$INPUT_PATH/berlin_muggelsee:/home/mambauser/wd/input/berlin_muggelsee:ro" \
+    --volume "$OUTPUT_PATH:/home/mambauser/wd" \
+    "$DOCKER_IMAGE_ID" \
+    --batch \
+    --eoap \
+    --bundle-path /home/mambauser/hw-berlin_muggelsee_mlrun_20260916_113308 \
+    --input-dataset-path /home/mambauser/wd/input/berlin_muggelsee \
+    --mode latest \
+    --save-index
+
+ls -ltrAh --color=never $OUTPUT_PATH
+```
+
+The image should not only be available locally, but also in a container registry.
+
+```{bash}
+check-container-registry.sh $DOCKER_IMAGE_ID || FAIL_REQ_3=1
+```
+
+
+#### Requirements Validated
+
+**req/app/cmd-line** (Requirement 1)
+
+> The Application SHALL be a non-interactive executable as a command-line application.
+
+
+**req/app/container** (Requirement 2)
+
+> The environment, libraries, binaries, executable and configuration files necessary to execute the Application SHALL be bundled in a container image.
+
+
+**req/app/registry** (Requirement 3)
+
+> The Application container image SHALL be accessible in a container registry.
+
+### Running as an EOAP
+
+First, we validate that that the CWL document is valid.
+
+```{bash}
+cwltool --disable-color --validate "$CWL_PATH" | cat
+```
+
+The CWL should contain a `Workflow` and at least one `CommandLineTool` object.
+We inpect the classes in the CWL graph to make sure.
+
+```{bash}
+show-cwl-graph-classes.sh "$CWL_PATH"
+```
+
+The EOAP can be executed from its CWL description with `cwltool`.
+
+```{bash}
+cwltool --outdir $OUTPUT_PATH/cwlruns \
+    $CWL_PATH#pftnc_inference \
+    --input_dataset_path $INPUT_PATH/berlin_muggelsee \
+    --bundle_path $SOFTWARE_ROOT/eoap/hw-berlin_muggelsee_mlrun_20260916_113308 \
+    || FAIL_REQ_7=1
+```
+
+Cwltool creates a new output directory with a random name when it is run.
+We save the last run in a variable to access it later.
+
+```{bash}
+CWLRUN_PATH=$(find-newest-directory-entry.sh "$OUTPUT_PATH/cwlruns")
+echo "Path to last cwl run: $CWLRUN_PATH"
+```
+
+#### Requirements Validated
+
+**req/app-pck/cwl** (Requirement 7)
+
+> The Application Package SHALL be a valid CWL document with a “Workflow” class and one or more “CommandLineTool” classes.
+
+#### EOAP Output
+
+```{bash}
+tree -n $CWLRUN_PATH || :
+```
+
+```{bash}
+python -c "import pandas as pd; \
+    df = pd.read_csv(\"$OUTPUT_PATH/predictions/predictions.csv\"); \
+    columns = ['time', 'site', 'diatoms_ug_per_l_pred', 'cyanobacterial_ug_per_l_pred', 'others_ug_per_l_pred']; \
+    df_formatted = df.T.reset_index(); \
+    df_formatted.columns = ['Variable', 'Value']; \
+    print(df_formatted);" \
+   || :
+```
+
+
+## STAC input / output
+
+### Inputs
+
+The EO Products of the input are provided as directories with a `catalog.json` describing the products each:
+
+```{bash}
+ls -lAhX --color=never $INPUT_PATH/*
+```
+
+These same inputs are classed as `Directory` in the workflow:
+
+```{bash}
+extract-directory-inputs-from.sh Workflow "$CWL_PATH" || FAIL_REQ_4=1
+```
+
+### Outputs
+
+The output contains a single `catalog.json` and item, describing the output.
+Using the recursive validation, both the catalog and item are confirmed to be valid STAC.
+
+```{bash}
+(stac-validator validate --recursive $CWLRUN_PATH/catalog.json | cat) || FAIL_REQ_5=1
+
+```
+
+The EOAP best practice mandates that the item contains at least `geometry, bbox` and `datetime` keys.
+
+```{bash}
+extract-output-keys-from-stac-item.sh $CWLRUN_PATH/predictions/predictions.json || FAIL_REQ_6=1
+```
+
+
+### Requirements Validated
+
+**req/app/stac-input** (Requirement 4)
+
+> An Application input argument that requires staged EO product files SHALL be defined as an argument that points to a folder where a STAC Catalog, named catalog.json, contains a list of one or more STAC Items and associated STAC Assets referencing the files.
+
+**req/app/stac-out** (Requirement 5)
+
+> An Application that creates EO product files to be stage-out SHALL generate a valid STAC Catalog, named catalog.json, and include the STAC Item(s) and corresponding STAC Assets pointing to the results of the processing.
+
+
+**rec/app/stac-out-metadata** (Requirement 6)
+
+> The STAC Catalog created by the Application SHALL include metadata elements for each STAC Item with at least their spatial (geometry, box) and temporal (datetime) properties.
+
+
+## CWL
+
+The fields `id`, `baseCommand`, `inputs`, `requirements` should be present in the `CommandLineTool`.
+One of the requirements should be `DockerRequirement`.
+
+```{bash}
+check-commandlinetool-fields.sh "$CWL_PATH" || FAIL_REQ_8=1
+```
+
+The fields `id`, `label`, and `doc` should be present in the `Workflow`.
+
+```{bash}
+check-workflow-fields.sh "$CWL_PATH" || FAIL_REQ_10=1
+```
+
+Each input of the `Workflow` should have fields `id`, `label`, and `doc`
+
+```{bash}
+check-workflow-input-fields.sh $CWL_PATH || FAIL_REQ_11=1
+```
+
+The CWL document should contain a `version`:
+
+```{bash}
+check-version.sh $CWL_PATH || FAIL_REQ_9=1
+```
+
+### Requirements Validated
+
+**req/app-pck/clt** (Requirement 8)
+
+> The Application Package CWL CommandLineTool classes SHALL contain the following elements:
+> — Identifier (“id”)
+> — Command line name (“baseCommand”)
+> — Input parameters (“inputs”)
+> — Environment requirements (“requirements”)
+> — Docker information (“DockerRequirement”)
+
+**req/app-pck/wf** (Requirement 9)
+
+> The Application Package CWL Workflow class SHALL contain the following elements:
+> — Identifier (“id”)
+> — Title (“label”)
+> — Abstract (“doc”)
+
+
+**req/app-pck/wf-inputs** (Requirement 10)
+
+> The Application Package CWL Workflow class “inputs” fields SHALL contain the following elements:
+> — Identifier (“id”)
+> — Title (“label”)
+> — Abstract (“doc”)
+
+**req/app-pck/metadata** (Requirement 11)
+
+> The Application Package CWL Workclass classes SHALL include additional metadata as defined in Table 1
+
+> Required in table 1: version
+
+
+## CWL STAC / IO
+
+
+Inputs and outputs are staged in and out using STAC catalogs. Each input that is an "EO Product" like a vector or raster dataset is declared as type `Directory` and is described by a STAC catalog `catalog.json` and accompanying STAC item(s) placed in that directory.
+
+Outputs are handled in much the same way, the application in the application package is reposible for generating a STAC catalog (also named `catalog.json`) and stage out all the contents of its working directory together with the STAC metadata describing the outputs.
+
+### Inputs
+
+There are inputs of type directory in the CommandLineTool description.
+
+```{bash}
+extract-directory-inputs-from.sh CommandLineTool "$CWL_PATH" || FAIL_REQ_12=1
+```
+
+There are inputs of type directory in the Workflow description.
+
+```{bash}
+extract-directory-inputs-from.sh Workflow "$CWL_PATH" || FAIL_REQ_13=1
+```
+
+### Outputs
+
+The CommandLineTool stages out all the contents of the working directory.
+
+```{bash}
+extract-commandlinetool-outputs.sh "$CWL_PATH" || FAIL_REQ_14=1
+```
+
+### Requirements validated
+
+**req/app-pck-stage-in/clt-stac** (Requirement 12)
+
+> All input parameters of the CWL ComandLineTool that require the staging of EO products SHALL be of type Directory.
+
+**req/app-pck-stage-in/wf-stac** (Requirement 13)
+
+> Input parameters of the CWL Workflow that require the staging of EO products SHALL be of type Directory.
+
+**req/app-pck-stage-out/output-stac** (Requirement 14)
+
+> The outputs field of the CommandLineTool that requires the stage-out of EO products SHALL retrieve all the files produced in the working directory.
+
+## Summary
+
+```{bash}
+
+for i in {1..14}; do
+    var="FAIL_REQ_$i"
+    req=${var#FAIL_}
+    if [[ "${!var:-}" == "1" ]]; then
+        #echo "$req: FAILED"
+        printf '%s\t\033[31mFAILED\033[0m\n' "$req"
+    else
+        printf '%s\t\033[32mPASSED\033[0m\n' "$req"
+    fi
+done
+
+```
