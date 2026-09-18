@@ -32,6 +32,7 @@ zarr = ">=3.3.0,<4"
 rioxarray = ">=0.23.0,<0.24"
 pytables = ">=3.11.1,<4"
 h5py = ">=3.16.0,<4"
+yq = ">=4.1.2,<5"
 
 [environments]
 dev = ["dev", "docs"]
