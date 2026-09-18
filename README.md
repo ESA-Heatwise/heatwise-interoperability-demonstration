@@ -63,15 +63,14 @@ This populates the `software`, `application-packages` and `inputs` directories u
 tree -n -L 1 {software,inputs,application-packages}
 ```
 
-## Rendering {#sec-rendering}
+## Rendering
 
 This technical note is implemented using the [Quarto](https://quarto.org/) framework. Using Quarto, the same content can be rendered in different formats.
 
 In the following, instructions are given to render the demonstration as Jupyter Notebooks for interactive demonstration as well as website and PDF formats.
 Quarto is based on `pandoc` and supports a number of [further output formats](https://quarto.org/docs/output-formats/all-formats.html). Rendering to other formats may require additional steps not documented here.
 
-> Please note that you must have followed the instructions listed in #sec-installation before running
-the
+> Please note that you must have followed the installation and staging instructions before rendering.
 
 The supported render targets are available as `pixi` tasks. See `pixi.toml` for the corresponding quarto commands.
 
