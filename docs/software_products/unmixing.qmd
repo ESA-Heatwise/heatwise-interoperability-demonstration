@@ -36,7 +36,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-hysupp-unmixing
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_hysupp_unmixing.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/unmixing
 
-DOCKER_IMAGE_ID=ghcr.io/leonelgl/heatwise-hysupp-unmixing:v1.0.0
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-hysupp-unmixing:v1.0.0
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/unmixing
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
