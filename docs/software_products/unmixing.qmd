@@ -225,19 +225,19 @@ check-commandlinetool-fields.sh "$CWL_PATH" || FAIL_REQ_8=1
 The fields `id`, `label`, and `doc` should be present in the `Workflow`.
 
 ```{bash}
-check-workflow-fields.sh "$CWL_PATH" || FAIL_REQ_10=1
+check-workflow-fields.sh "$CWL_PATH" || FAIL_REQ_9=1
 ```
 
 Each input of the `Workflow` should have fields `id`, `label`, and `doc`
 
 ```{bash}
-check-workflow-input-fields.sh $CWL_PATH || FAIL_REQ_11=1
+check-workflow-input-fields.sh $CWL_PATH || FAIL_REQ_10=1
 ```
 
 The CWL document should contain a `version`:
 
 ```{bash}
-check-version.sh $CWL_PATH || FAIL_REQ_9=1
+check-version.sh $CWL_PATH || FAIL_REQ_11=1
 ```
 
 ### Requirements Validated
