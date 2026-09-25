@@ -6,8 +6,7 @@ title: LCZ Full Pipeline
 
 The following sections demonstrate that the HEATWISE Local Climate Zones classification (full pipeline) software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
 
-> In this demonstration, only the inference step of the LCZ classification algorithm is presented.
-> The repository contains another EOAP for training.
+> The pipeline runs all steps of the LCZ classification, including model training, in one workflow.
 
 The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requirement.
 
