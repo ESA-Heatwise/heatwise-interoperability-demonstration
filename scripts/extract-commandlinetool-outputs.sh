@@ -23,18 +23,21 @@ yq -y -M -e '
 
 status_a=$?
 
-echo Extracts all items from Working directory: $(
-    yq -M -e '
-        # Select the CommandLineTool(s) from the graph
+# Every output of type Directory (i.e. staged-out EO products) must retrieve the entire
+# working directory ("glob": "."). Outputs of other types (e.g. single intermediate
+# files passed between workflow steps) are not concerned by the requirement.
+all_dirs=$(yq -M -e '
+    [
         .["$graph"][]
         | select(.class == "CommandLineTool")
-        # Check all entires in the outputs field:
         | .outputs[]
-        # The outputBinding is "glob": "." which means that all files from the working directory are included as outputs
-        .outputBinding.glob == "."
-    ' $1
-)
-
+        | select(.type == "Directory")
+        | .outputBinding.glob == "."
+    ]
+    | length > 0 and all
+' $1)
 status_b=$?
 
-exit $status_a || $status_b
+echo Extracts all items from Working directory: $all_dirs
+
+[[ $status_a -eq 0 && $status_b -eq 0 ]]
