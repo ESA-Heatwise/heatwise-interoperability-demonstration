@@ -41,7 +41,7 @@ The following EOAPs have been created in the context of Heatwise:
 
 ## Demonstration
 
-This technical note contains a demonstration of adherence to interoperability best practice. All software products listed in @tbl-software-products are shown to adhere to [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0). The requirements and how each requirement is demonstrated is discussed in @sec-requirements.
+This technical note contains a demonstration of adherence to interoperability best practice. All software products listed in @tbl-software-products are shown to adhere to [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0). The requirements and how each requirement is demonstrated are discussed in @sec-requirements.
 
 The demonstration makes use of several tools for validating aspects of the best practice. An overview of the tools used is given in @tbl-tools. All tools are installed by following the instructions in @sec-installation.
 
