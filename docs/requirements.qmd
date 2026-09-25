@@ -85,7 +85,7 @@ How the `catalog.json` is processed internally is not shown in the demonstration
 
 > An Application that creates EO product files to be stage-out SHALL generate a valid STAC Catalog, named catalog.json, and include the STAC Item(s) and corresponding STAC Assets pointing to the results of the processing.
 
-The STAC catalog and item produced by each EOAP are shown to be valid STAC with the `stac-validor` tool.
+The STAC catalog and item produced by each EOAP are shown to be valid STAC with the `stac-validator` tool.
 
 ## Requirement 6: rec/app/stac-out-metadata
 
