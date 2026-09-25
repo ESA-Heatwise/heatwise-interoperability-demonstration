@@ -10,7 +10,7 @@ The following sections demonstrate that the HEATWISE Local Climate Zones classif
 
 The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requirement.
 
-The demostration proceeds in the following steps:
+The demonstration proceeds in the following steps:
 
 - Execute the software as docker container and as CWL document (the EOAP)
 - Show that STAC inputs and outputs are handled by the application as required
@@ -19,7 +19,7 @@ The demostration proceeds in the following steps:
 
 After each step, the requirements shown are listed.
 
-@sec-requirements contains an overview of all requirements in order and how they are demonstrated in this document. It furthermore shows all utility scripts used in this demonstration. For brevity, the content of utility scripts only shown in the requirements overview and not in each demonstration.
+@sec-requirements contains an overview of all requirements in order and how they are demonstrated in this document. It furthermore shows all utility scripts used in this demonstration. For brevity, the content of utility scripts is only shown in the requirements overview and not in each demonstration.
 
 ## Preparation
 
@@ -93,14 +93,14 @@ done
 
 ### Running as an EOAP
 
-First, we validate that that the CWL document is valid.
+First, we validate that the CWL document is valid.
 
 ```{bash}
 cwltool --disable-color --validate "$CWL_PATH" | cat
 ```
 
 The CWL should contain a `Workflow` and at least one `CommandLineTool` object.
-We inpect the classes in the CWL graph to make sure.
+We inspect the classes in the CWL graph to make sure.
 
 ```{bash}
 show-cwl-graph-classes.sh "$CWL_PATH"
@@ -272,7 +272,7 @@ check-version.sh $CWL_PATH || FAIL_REQ_11=1
 
 Inputs and outputs are staged in and out using STAC catalogs. Each input that is an "EO Product" like a vector or raster dataset is declared as type `Directory` and is described by a STAC catalog `catalog.json` and accompanying STAC item(s) placed in that directory.
 
-Outputs are handled in much the same way, the application in the application package is reposible for generating a STAC catalog (also named `catalog.json`) and stage out all the contents of its working directory together with the STAC metadata describing the outputs.
+Outputs are handled in much the same way, the application in the application package is responsible for generating a STAC catalog (also named `catalog.json`) and stage out all the contents of its working directory together with the STAC metadata describing the outputs.
 
 ### Inputs
 
