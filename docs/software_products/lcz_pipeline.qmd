@@ -55,12 +55,26 @@ The first set of requirements is concerned with how the software is executed. It
 
 ### Running as a docker container
 
-The LCZ pipeline is a combination of the steps showcased in the last three chapters. All the docker images used in the CWL CommandLineTool specifications have already been showcased:
+The LCZ pipeline combines the processing steps showcased in the last three chapters:
 
 1. LCZ Preprocessing @sec-lcz-preprocessing
 1. LCZ Patch extraction @sec-lcz-patch-extraction
 1. LCZ Classification @sec-lcz-classification
 
+Running the individual container images directly with `docker run` is shown in these chapters.
+The pipeline additionally uses pipeline-specific variants of some of the images.
+For this EOAP, the non-interactive execution of all containers (Requirements 1 and 2) is demonstrated by the successful execution of the workflow with `cwltool` in the next section.
+
+The container images referenced in the CWL CommandLineTools are extracted from the CWL document, and each is checked to be available in a container registry:
+
+```{bash}
+DOCKER_IMAGE_IDS=$(yq -r '.["$graph"][] | select(.class == "CommandLineTool") | (.requirements // [])[] | select(.class == "DockerRequirement") | .dockerPull' "$CWL_PATH" | sort -u)
+[[ -n "$DOCKER_IMAGE_IDS" ]] || { echo "FAILURE: No container images found in CWL document"; FAIL_REQ_3=1; }
+
+for DOCKER_IMAGE_ID in $DOCKER_IMAGE_IDS; do
+    check-container-registry.sh "$DOCKER_IMAGE_ID" || FAIL_REQ_3=1
+done
+```
 
 #### Requirements Validated
 
@@ -109,7 +123,7 @@ cwltool \
    --train_config $SOFTWARE_ROOT/examples/train_config_sample.yaml \
    --predict_config $SOFTWARE_ROOT/examples/predict_config_template.yaml \
    --experiment_name HSI-BS \
-  || FAIL_REQ_7=1
+  || { FAIL_REQ_1=1; FAIL_REQ_2=1; FAIL_REQ_7=1; }
 ```
 
 Cwltool creates a new output directory with a random name when it is run.
