@@ -114,7 +114,6 @@ The Jupyter server can be started using:
 ```{.bash}
 pixi run show-notebooks
 ```
-.
 
 ## Cleanup
 
