@@ -37,7 +37,7 @@ The following EOAPs have been created in the context of Heatwise:
 | 8     | LCZ pipeline | Chain from Stage 1 to Stage 3 of the Heatwise LCZ pipeline. | <https://github.com/ESA-Heatwise/heatwise-lcz-pipeline> | manual |
 | 9     | HySUPP Unmixing | HEATWISE HySUPP-based supervised unmixing processor. | https://github.com/ESA-Heatwise/heatwise-hysupp-unmixing | manual |
 
-: Earth Observaton Application Packages produced by HEATWISE {#tbl-software-products}
+: Earth Observation Application Packages produced by HEATWISE {#tbl-software-products}
 
 ## Demonstration
 
