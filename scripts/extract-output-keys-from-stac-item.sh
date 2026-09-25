@@ -24,11 +24,11 @@ yq -y -M -e '
 
 status_a=$?
 
-found_keys=$(yq -M -e '(has("geometry") and (.geometry | has("coordinates"))) and (.geometry != null and .bbox != null)' $1)
+found_keys=$(yq -M -e '(has("geometry") and (.geometry | has("coordinates"))) and (.geometry != null and .bbox != null) and (.properties | has("datetime"))' $1)
 status_b=$?
 
 echo ""
 echo "Required keys present: $found_keys"
 
 
-exit $status_a || $status_b
+[[ $status_a -eq 0 && $status_b -eq 0 ]]
