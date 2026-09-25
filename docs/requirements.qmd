@@ -255,7 +255,7 @@ The same script used for @sec-req-app-pck-stage-in-clt-stac is used to verify th
 > The outputs field of the CommandLineTool that requires the stage-out of EO products SHALL retrieve all the files produced in the working directory.
 
 The `outputs` field of the CWL `CommandLineTool` are extracted and shown to output all contents of the working directory with a glob filter of `"."` (representing the current directory).
-All outputs of type Directory (the staged-out EO products) are checked; outputs of other types, such as single intermediate files passed between workflow steps, are not concerned by this requirement.
+All outputs of type `Directory` (the staged-out EO products) are checked; outputs of other types, such as single intermediate files passed between workflow steps, are not concerned by this requirement.
 
 `yq` is used to extract the fields of interest from the CWL document.
 
