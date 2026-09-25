@@ -147,20 +147,16 @@ echo "Path to last cwl run: $CWLRUN_PATH"
 tree -n $CWLRUN_PATH || :
 ```
 
-```{.bash}
-python -c "import numpy as np; \
-    import matplotlib.pyplot as plt; \
-    import xarray as xr; \
-    import rioxarray as rio; \
-    ds_hsi=rio.open_rasterio(\"$CWLRUN_PATH/03_hsi_final/hsi_bs/Berlin_hsi_bs.tif\"); \
-    fig, ax = plt.subplots(); \
-    ds_hsi_subset = ds_hsi.sel(band=[7, 3, 2]); \
-    xr.where(ds_hsi_subset < 0, np.nan, ds_hsi_subset ** 0.5).plot.imshow(ax=ax); \
-    fig.savefig('hsi_preprocessed.png'); \
-    ds_hsi.close()" || :
+The EOAP produces a colour preview of the LCZ classification map, referenced as asset `preview` in its output STAC item:
+
+```{bash}
+python -c "import json, pathlib, shutil; \
+    item_path = pathlib.Path(\"$CWLRUN_PATH/lcz_prediction_item.json\"); \
+    preview = json.loads(item_path.read_text())['assets']['preview']['href']; \
+    shutil.copy(item_path.parent / preview, 'lcz_classification_map.png')" || :
 ```
 
-![Preprocessed HSI data](hsi_preprocessed.png)
+![LCZ classification map](lcz_classification_map.png)
 
 
 ## STAC input / output
