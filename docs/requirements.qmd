@@ -77,7 +77,7 @@ check-container-registry.sh quay.io/does-not-exist:1.0 || :
 
 > An Application input argument that requires staged EO product files SHALL be defined as an argument that points to a folder where a STAC Catalog, named catalog.json, contains a list of one or more STAC Items and associated STAC Assets referencing the files.
 
-The inputs passed to the processor are shown to be directories containing a `catalog.json` and the CWL document is shown to process these inputs as type `directory`. The script to extract the inputs is shown in @sec-req-app-pck-stage-in-clt-stac.
+The inputs passed to the processor are shown to be directories containing a `catalog.json` and the CWL document is shown to process these inputs as type `Directory`. The script to extract the inputs is shown in @sec-req-app-pck-stage-in-clt-stac.
 
 How the `catalog.json` is processed internally is not shown in the demonstration and can be inspected in the source code of each repository if required.
 
@@ -230,7 +230,7 @@ cat $(which check-version.sh)
 
 ### Script
 
-The script accepts as a first parameter the class of the CWL object (`Workflow` or `Directory`) to be checked. This is done, so that the same script can be used for @sec-req-app-pck-stage-in-wf-stac.
+The script accepts as a first parameter the class of the CWL object (`Workflow` or `CommandLineTool`) to be checked. This is done, so that the same script can be used for @sec-req-app-pck-stage-in-wf-stac.
 
 ::: {.content-visible when-format="html"}
 ```{.bash include="../scripts/extract-directory-inputs-from.sh"}
