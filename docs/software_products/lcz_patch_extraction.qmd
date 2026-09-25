@@ -6,7 +6,7 @@ The following sections demonstrate that the HEATWISE Local Climate Zones patch e
 
 The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requirement.
 
-The demostration proceeds in the following steps:
+The demonstration proceeds in the following steps:
 
 - Execute the software as docker container and as CWL document (the EOAP)
 - Show that STAC inputs and outputs are handled by the application as required
