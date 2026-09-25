@@ -62,7 +62,7 @@ ls -ltrAh --color=never $OUTPUT_PATH
 
 ```
 
-The image should not only be avaiable locally, but also in a container registry.
+The image should not only be available locally, but also in a container registry.
 
 ```{bash}
 check-container-registry.sh $DOCKER_IMAGE_ID || FAIL_REQ_3=1
