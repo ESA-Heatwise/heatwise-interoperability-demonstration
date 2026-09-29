@@ -27,8 +27,16 @@ yq -y -M -e '
 
 status_a=$?
 
-echo Required keys present: $(yq -M -e '.["$graph"][] | select(.class == "CommandLineTool") | has("requirements") and (.requirements | has("DockerRequirement"))' $1)
-
+found_keys=$(yq -M -e '
+    [
+        .["$graph"][]
+        | select(.class == "Workflow")
+        | has("id") and has("label") and has("doc")
+    ]
+    | length > 0 and all
+' $1)
 status_b=$?
 
-exit $status_a || $status_b
+echo Required keys present: $found_keys
+
+[[ $status_a -eq 0 && $status_b -eq 0 ]]

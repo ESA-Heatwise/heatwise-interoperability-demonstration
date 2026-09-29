@@ -6,12 +6,11 @@ title: LCZ Full Pipeline
 
 The following sections demonstrate that the HEATWISE Local Climate Zones classification (full pipeline) software follows the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0).
 
-> In this demonstration, only the inference step of the LCZ classification algorithm is presented.
-> The repository contains another EOAP for training.
+> The pipeline runs all steps of the LCZ classification, including model training, in one workflow.
 
 The order of demonstration is deliberately different from that given in the best practice document. This is done to make the demonstration easy to follow and group requirements that can be shown together. An effort is made to keep the requirements in order as much as possible to make it easy to find a specific requirement.
 
-The demostration proceeds in the following steps:
+The demonstration proceeds in the following steps:
 
 - Execute the software as docker container and as CWL document (the EOAP)
 - Show that STAC inputs and outputs are handled by the application as required
@@ -20,7 +19,7 @@ The demostration proceeds in the following steps:
 
 After each step, the requirements shown are listed.
 
-@sec-requirements contains an overview of all requirements in order and how they are demonstrated in this document. It furthermore shows all utility scripts used in this demonstration. For brevity, the content of utility scripts only shown in the requirements overview and not in each demonstration.
+@sec-requirements contains an overview of all requirements in order and how they are demonstrated in this document. It furthermore shows all utility scripts used in this demonstration. For brevity, the content of utility scripts is only shown in the requirements overview and not in each demonstration.
 
 ## Preparation
 
@@ -55,12 +54,26 @@ The first set of requirements is concerned with how the software is executed. It
 
 ### Running as a docker container
 
-The LCZ pipeline is a combination of the steps showcased in the last three chapters. All the docker images used in the CWL CommandLineTool specifications have already been showcased:
+The LCZ pipeline combines the processing steps showcased in the last three chapters:
 
 1. LCZ Preprocessing @sec-lcz-preprocessing
 1. LCZ Patch extraction @sec-lcz-patch-extraction
 1. LCZ Classification @sec-lcz-classification
 
+Running the individual container images directly with `docker run` is shown in these chapters.
+The pipeline additionally uses pipeline-specific variants of some of the images.
+For this EOAP, the non-interactive execution of all containers (Requirements 1 and 2) is demonstrated by the successful execution of the workflow with `cwltool` in the next section.
+
+The container images referenced in the CWL CommandLineTools are extracted from the CWL document, and each is checked to be available in a container registry:
+
+```{bash}
+DOCKER_IMAGE_IDS=$(yq -r '.["$graph"][] | select(.class == "CommandLineTool") | (.requirements // [])[] | select(.class == "DockerRequirement") | .dockerPull' "$CWL_PATH" | sort -u)
+[[ -n "$DOCKER_IMAGE_IDS" ]] || { echo "FAILURE: No container images found in CWL document"; FAIL_REQ_3=1; }
+
+for DOCKER_IMAGE_ID in $DOCKER_IMAGE_IDS; do
+    check-container-registry.sh "$DOCKER_IMAGE_ID" || FAIL_REQ_3=1
+done
+```
 
 #### Requirements Validated
 
@@ -80,14 +93,14 @@ The LCZ pipeline is a combination of the steps showcased in the last three chapt
 
 ### Running as an EOAP
 
-First, we validate that that the CWL document is valid.
+First, we validate that the CWL document is valid.
 
 ```{bash}
 cwltool --disable-color --validate "$CWL_PATH" | cat
 ```
 
 The CWL should contain a `Workflow` and at least one `CommandLineTool` object.
-We inpect the classes in the CWL graph to make sure.
+We inspect the classes in the CWL graph to make sure.
 
 ```{bash}
 show-cwl-graph-classes.sh "$CWL_PATH"
@@ -109,7 +122,7 @@ cwltool \
    --train_config $SOFTWARE_ROOT/examples/train_config_sample.yaml \
    --predict_config $SOFTWARE_ROOT/examples/predict_config_template.yaml \
    --experiment_name HSI-BS \
-  || FAIL_REQ_7=1
+  || { FAIL_REQ_1=1; FAIL_REQ_2=1; FAIL_REQ_7=1; }
 ```
 
 Cwltool creates a new output directory with a random name when it is run.
@@ -132,20 +145,16 @@ echo "Path to last cwl run: $CWLRUN_PATH"
 tree -n $CWLRUN_PATH || :
 ```
 
-```{.bash}
-python -c "import numpy as np; \
-    import matplotlib.pyplot as plt; \
-    import xarray as xr; \
-    import rioxarray as rio; \
-    ds_hsi=rio.open_rasterio(\"$CWLRUN_PATH/03_hsi_final/hsi_bs/Berlin_hsi_bs.tif\"); \
-    fig, ax = plt.subplots(); \
-    ds_hsi_subset = ds_hsi.sel(band=[7, 3, 2]); \
-    xr.where(ds_hsi_subset < 0, np.nan, ds_hsi_subset ** 0.5).plot.imshow(ax=ax); \
-    fig.savefig('hsi_preprocessed.png'); \
-    ds_hsi.close()" || :
+The EOAP produces a colour preview of the LCZ classification map, referenced as asset `preview` in its output STAC item:
+
+```{bash}
+python -c "import json, pathlib, shutil; \
+    item_path = pathlib.Path(\"$CWLRUN_PATH/lcz_prediction_item.json\"); \
+    preview = json.loads(item_path.read_text())['assets']['preview']['href']; \
+    shutil.copy(item_path.parent / preview, 'lcz_pipeline_map.png')" || :
 ```
 
-![Preprocessed HSI data](hsi_preprocessed.png)
+![LCZ classification map](lcz_pipeline_map.png)
 
 
 ## STAC input / output
@@ -210,19 +219,19 @@ check-commandlinetool-fields.sh "$CWL_PATH" || FAIL_REQ_8=1
 The fields `id`, `label`, and `doc` should be present in the `Workflow`.
 
 ```{bash}
-check-workflow-fields.sh "$CWL_PATH" || FAIL_REQ_10=1
+check-workflow-fields.sh "$CWL_PATH" || FAIL_REQ_9=1
 ```
 
 Each input of the `Workflow` should have fields `id`, `label`, and `doc`
 
 ```{bash}
-check-workflow-input-fields.sh $CWL_PATH || FAIL_REQ_11=1
+check-workflow-input-fields.sh $CWL_PATH || FAIL_REQ_10=1
 ```
 
 The CWL document should contain a `version`:
 
 ```{bash}
-check-version.sh $CWL_PATH || FAIL_REQ_9=1
+check-version.sh $CWL_PATH || FAIL_REQ_11=1
 ```
 
 ### Requirements Validated
@@ -263,7 +272,7 @@ check-version.sh $CWL_PATH || FAIL_REQ_9=1
 
 Inputs and outputs are staged in and out using STAC catalogs. Each input that is an "EO Product" like a vector or raster dataset is declared as type `Directory` and is described by a STAC catalog `catalog.json` and accompanying STAC item(s) placed in that directory.
 
-Outputs are handled in much the same way, the application in the application package is reposible for generating a STAC catalog (also named `catalog.json`) and stage out all the contents of its working directory together with the STAC metadata describing the outputs.
+Outputs are handled in much the same way, the application in the application package is responsible for generating a STAC catalog (also named `catalog.json`) and stage out all the contents of its working directory together with the STAC metadata describing the outputs.
 
 ### Inputs
 

@@ -37,11 +37,11 @@ The following EOAPs have been created in the context of Heatwise:
 | 8     | LCZ pipeline | Chain from Stage 1 to Stage 3 of the Heatwise LCZ pipeline. | <https://github.com/ESA-Heatwise/heatwise-lcz-pipeline> | manual |
 | 9     | HySUPP Unmixing | HEATWISE HySUPP-based supervised unmixing processor. | https://github.com/ESA-Heatwise/heatwise-hysupp-unmixing | manual |
 
-: Earth Observaton Application Packages produced by HEATWISE {#tbl-software-products}
+: Earth Observation Application Packages produced by HEATWISE {#tbl-software-products}
 
 ## Demonstration
 
-This technical note contains a demonstration of adherence to interoperability best practice. All software products listed in @tbl-software-products are shown to adhere to [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0). The requirements and how each requirement is demonstrated is discussed in @sec-requirements.
+This technical note contains a demonstration of adherence to interoperability best practice. All software products listed in @tbl-software-products are shown to adhere to [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0). The requirements and how each requirement is demonstrated are discussed in @sec-requirements.
 
 The demonstration makes use of several tools for validating aspects of the best practice. An overview of the tools used is given in @tbl-tools. All tools are installed by following the instructions in @sec-installation.
 

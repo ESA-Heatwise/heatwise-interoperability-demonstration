@@ -8,7 +8,7 @@ Everything used in this demonstration, including the tools in @tbl-tools are ins
 
 Make sure you are using [`pixi run`](https://pixi.prefix.dev/latest/reference/cli/pixi/run/#pixi-run) or have the environment activated (e.g., using [`pixi shell`](https://pixi.prefix.dev/latest/reference/cli/pixi/shell/)) to run any of the scripts or commands listed in this technical note.
 
-The demonstration itself activates the environment using [`pixi shell-hook`](https://pixi.prefix.dev/latest/reference/cli/pixi/shell-hook/) to avoid lauching a new cell.
+The demonstration itself activates the environment using [`pixi shell-hook`](https://pixi.prefix.dev/latest/reference/cli/pixi/shell-hook/) to avoid launching a new shell.
 
 First, clone the git repository and navigate to it:
 
@@ -17,7 +17,7 @@ git clone https://github.com/ESA-Heatwise/heatwise-interoperability-demonstratio
 cd heatwise-interoperability-demonstration
 ```
 
-The remaning steps assume that they are performed from within the root of the repository.
+The remaining steps assume that they are performed from within the root of the repository.
 
 To install the pixi environment, run
 
@@ -70,8 +70,7 @@ This technical note is implemented using the [Quarto](https://quarto.org/) frame
 In the following, instructions are given to render the demonstration as Jupyter Notebooks for interactive demonstration as well as website and PDF formats.
 Quarto is based on `pandoc` and supports a number of [further output formats](https://quarto.org/docs/output-formats/all-formats.html). Rendering to other formats may require additional steps not documented here.
 
-> Please note that you must have followed the instructions listed in #sec-installation before running
-the
+> Please note that you must have followed the instructions listed in @sec-installation before running.
 
 The supported render targets are available as `pixi` tasks. See `pixi.toml` for the corresponding quarto commands.
 
@@ -104,7 +103,7 @@ pixi run render-pdf
 
 
 This command generates a Jupyter Notebook to demonstrate interoperability of each of the software products. This configuration does not render the rest of the documentation (like these instructions).
-The notebooks will be avaiable in the `_notebooks` directory.
+The notebooks will be available in the `_notebooks` directory.
 
 ```{.bash}
 pixi run render-notebooks
@@ -115,7 +114,6 @@ The Jupyter server can be started using:
 ```{.bash}
 pixi run show-notebooks
 ```
-.
 
 ## Cleanup
 

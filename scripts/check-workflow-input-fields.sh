@@ -16,7 +16,7 @@ yq -y -M -e '
     )
     .inputs
 
-    # Convert to normalized format (CWL allows explict id or using the id as the key for a mapping instead)
+    # Convert to normalized format (CWL allows explicit id or using the id as the key for a mapping instead)
     | to_entries
 
     # Check for presence of fields required by EOAP best practice
