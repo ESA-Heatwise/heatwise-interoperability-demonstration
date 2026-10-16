@@ -12,3 +12,6 @@ project:
 
 format:
   ipynb: default
+
+execute:
+  enabled: false
