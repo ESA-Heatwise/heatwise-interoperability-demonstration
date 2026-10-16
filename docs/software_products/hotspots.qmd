@@ -62,7 +62,9 @@ docker run --rm \
     --workdir=/home/mambauser/wd \
     -v $SOFTWARE_ROOT/data:/home/mambauser/data \
     -v $SOFTWARE_ROOT/inputs:/home/mambauser/wd/inputs \
-    -v "$OUTPUT_PATH":/home/mambauser/wd $DOCKER_IMAGE_ID \
+    -v "$OUTPUT_PATH":/home/mambauser/wd/output \
+    $DOCKER_IMAGE_ID \
+    --savename hotspots.tif \
     || { FAIL_REQ_1=1; FAIL_REQ_2=1; }
 
 ls -ltrAh --color=never $OUTPUT_PATH
