@@ -3,8 +3,8 @@ project:
 
 book:
   title: "Heatwise interoperability demonstration"
-  author: "Hannes Neuschmidt"
-  date: 2026-09-07
+  author: "Hannes Neuschmidt (Brockmann Consult GmbH)"
+  date: 2026-09-18
   chapters:
     - href: index.qmd
     - href: requirements.qmd
