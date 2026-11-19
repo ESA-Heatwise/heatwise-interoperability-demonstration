@@ -82,6 +82,13 @@ stage_pftnc() {
     cp -r "$REPO_BASE/input/berlin_muggelsee" "$INPUTS_PATH/pftnc/"
 }
 
+stage_docker_images() {
+    XCENGINE_GRAPH_ID="#xce_script"
+    for f in "$CWL_PATH"/*.cwl; do
+        cwl-docker-extract "$f" || cwl-docker-extract "${f}${XCENGINE_GRAPH_ID}"
+    done
+}
+
 clean() {
     rm -rfI "$SOFTWARE_PATH"
     rm -rI "$CWL_PATH"
@@ -95,5 +102,6 @@ else
     stage_hysupp
     stage_lcz
     stage_pftnc
+    stage_docker_images
 fi
 
