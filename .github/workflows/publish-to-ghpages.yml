@@ -20,7 +20,7 @@ jobs:
       - name: Set up pixi
         uses: prefix-dev/setup-pixi@v0.10.2
         with:
-          pixi-version: v0.70.2
+          pixi-version: v0.84.2
 
       - name: install dependencies
         run: |
@@ -30,24 +30,20 @@ jobs:
         run: |
           pixi run stage
 
-      - name: Render site
+      - name: Render both targets (html, pdf)
         run: |
-          pixi run render-website
-
-      - name: render PDF
-        run: |
-          pixi run render-pdf
+          pixi run render-website-pdf
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: _site_multi
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: technical-note
-          path: _book_pdf/Heatwise-interoperability-demonstration.pdf
+          path: _site_multi/Heatwise-interoperability-demonstration.pdf
           overwrite: true
           archive: false
           if-no-files-found: warn

@@ -10,7 +10,11 @@ application-packages
 software
 *.ipynb_checkpoints
 
-
+# quarto
 /.quarto/
 **/*.quarto_ipynb
 **/*.quarto_ipynb*
+**/*.jupyter_cache
+
+# images
+docs/software_products/*.png
