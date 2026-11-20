@@ -24,7 +24,7 @@ Therefore, the parts of the demonstration that would be duplicated with other EO
 
 The tools described in this technical note are intended as support for manual inspection of an EOAP in development, to verify that it is compliant with the best practice. On their own, they do not constitute a technical verification of the best practice. Scripts are useful to extract the information relevant for a specific requirement, but human inspection is still required. The PASSED/FAILED section in the summary serves as a quick overview of the status of an EOAP but cannot guarantee that an EOAP is indeed compliant or that `Passed` will be reported for any compliant EOAP.
 
-Fundamentally, some of the EOAP requirements cannot be checked statically, because they depend on runtime behavior. This includes requirements `req/app/stac-input`, `req/app/stac-output`, `re/app-satc-out-metadata`. The demonstration works around this problem by running the EOAP on a single example input and observing its behavior. This gives a useful indication for these requirements, but cannot establish the adherence for arbitrary inputs matching the CWL input definition.
+Fundamentally, some of the EOAP requirements cannot be checked statically, because they depend on runtime behavior. This includes requirements `req/app/stac-input`, `req/app/stac-output`, `req/app-stac-out-metadata`. The demonstration works around this problem by running the EOAP on a single example input and observing its behavior. This gives a useful indication for these requirements, but cannot establish the adherence for arbitrary inputs matching the CWL input definition.
 
 This simplification implies limitations of what is demonstrated:
 

@@ -238,26 +238,29 @@ check-version.sh $CWL_PATH || FAIL_REQ_11=1
 **req/app-pck/clt** (Requirement 8)
 
 > The Application Package CWL CommandLineTool classes SHALL contain the following elements:
-> — Identifier (“id”)
-> — Command line name (“baseCommand”)
-> — Input parameters (“inputs”)
-> — Environment requirements (“requirements”)
-> — Docker information (“DockerRequirement”)
+>
+> - Identifier (“id”)
+> - Command line name (“baseCommand”)
+> - Input parameters (“inputs”)
+> - Environment requirements (“requirements”)
+> - Docker information (“DockerRequirement”)
 
 **req/app-pck/wf** (Requirement 9)
 
 > The Application Package CWL Workflow class SHALL contain the following elements:
-> — Identifier (“id”)
-> — Title (“label”)
-> — Abstract (“doc”)
+>
+> - Identifier (“id”)
+> - Title (“label”)
+> - Abstract (“doc”)
 
 
 **req/app-pck/wf-inputs** (Requirement 10)
 
 > The Application Package CWL Workflow class “inputs” fields SHALL contain the following elements:
-> — Identifier (“id”)
-> — Title (“label”)
-> — Abstract (“doc”)
+>
+> - Identifier (“id”)
+> - Title (“label”)
+> - Abstract (“doc”)
 
 **req/app-pck/metadata** (Requirement 11)
 
