@@ -131,11 +131,12 @@ cat $(which show-cwl-graph-classes.sh)
 ## Requirement 8: req/app-pck/clt
 
 > The Application Package CWL CommandLineTool classes SHALL contain the following elements:
-> — Identifier (“id”)
-> — Command line name (“baseCommand”)
-> — Input parameters (“inputs”)
-> — Environment requirements (“requirements”)
-> — Docker information (“DockerRequirement”)
+>
+> - Identifier (“id”)
+> - Command line name (“baseCommand”)
+> - Input parameters (“inputs”)
+> - Environment requirements (“requirements”)
+> - Docker information (“DockerRequirement”)
 
 
 `yq` is used to extract the keys mandated by this requirement.
@@ -157,9 +158,10 @@ cat $(which check-commandlinetool-fields.sh)
 ## Requirement 9: req/app-pck/wf
 
 > The Application Package CWL Workflow class SHALL contain the following elements:
-> — Identifier (“id”)
-> — Title (“label”)
-> — Abstract (“doc”)
+>
+> - Identifier (“id”)
+> - Title (“label”)
+> - Abstract (“doc”)
 
 `yq` is used to extract the keys mandated by this requirement.
 
@@ -181,9 +183,10 @@ cat $(which check-workflow-fields.sh)
 ## Requirement 10: req/app-pck/wf-inputs
 
 > The Application Package CWL Workflow class “inputs” fields SHALL contain the following elements:
-> — Identifier (“id”)
-> — Title (“label”)
-> — Abstract (“doc”)
+>
+> - Identifier (“id”)
+> - Title (“label”)
+> - Abstract (“doc”)
 
 `yq` is used to extract the `inputs` field of the CWL workflow and validate that the keys mandated by this requirement are present.
 

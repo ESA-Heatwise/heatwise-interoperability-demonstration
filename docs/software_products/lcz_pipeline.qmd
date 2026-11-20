@@ -77,11 +77,6 @@ done
 
 #### Requirements Validated
 
-**req/app/cmd-line** (Requirement 1)
-
-> The Application SHALL be a non-interactive executable as a command-line application.
-
-
 **req/app/container** (Requirement 2)
 
 > The environment, libraries, binaries, executable and configuration files necessary to execute the Application SHALL be bundled in a container image.
@@ -239,26 +234,29 @@ check-version.sh $CWL_PATH || FAIL_REQ_11=1
 **req/app-pck/clt** (Requirement 8)
 
 > The Application Package CWL CommandLineTool classes SHALL contain the following elements:
-> — Identifier (“id”)
-> — Command line name (“baseCommand”)
-> — Input parameters (“inputs”)
-> — Environment requirements (“requirements”)
-> — Docker information (“DockerRequirement”)
+>
+> - Identifier (“id”)
+> - Command line name (“baseCommand”)
+> - Input parameters (“inputs”)
+> - Environment requirements (“requirements”)
+> - Docker information (“DockerRequirement”)
 
 **req/app-pck/wf** (Requirement 9)
 
 > The Application Package CWL Workflow class SHALL contain the following elements:
-> — Identifier (“id”)
-> — Title (“label”)
-> — Abstract (“doc”)
+>
+> - Identifier (“id”)
+> - Title (“label”)
+> - Abstract (“doc”)
 
 
 **req/app-pck/wf-inputs** (Requirement 10)
 
 > The Application Package CWL Workflow class “inputs” fields SHALL contain the following elements:
-> — Identifier (“id”)
-> — Title (“label”)
-> — Abstract (“doc”)
+>
+> - Identifier (“id”)
+> - Title (“label”)
+> - Abstract (“doc”)
 
 **req/app-pck/metadata** (Requirement 11)
 
@@ -312,9 +310,11 @@ extract-commandlinetool-outputs.sh "$CWL_PATH" || FAIL_REQ_14=1
 
 ## Summary
 
+Requirement 1 is not tested (see below)
+
 ```{bash}
 
-for i in {1..14}; do
+for i in {2..14}; do
     var="FAIL_REQ_$i"
     req=${var#FAIL_}
     if [[ "${!var:-}" == "1" ]]; then
@@ -326,3 +326,19 @@ for i in {1..14}; do
 done
 
 ```
+
+The integrated pipeline of the Local Climate Zone classification software has been shown to be non-interactively executable using a CWL runner (`cwltool`).
+Furthermore it follows the CWL structure and mandatory fields prescribed by the OGC Best Practice for Earth Observation Application Package (EOAP).
+Inputs and outputs are processed as CWL `Directories` and valid STAC metadata is generated for the output.
+It may therefore be concluded that the software behaves as expected by the EOAP best practice in the example scenario.
+
+The requirement `/req/app/cmd-line` (see @sec-requirements) is skipped for the full pipeline.
+The EOAP best practice requires that the command-line software packaged as CWL `CommandLineTools` is non-interactively executable independently of the CWL wrapper. This is not considered in this demonstration chapter. However, the software making up the components of the full pipeline are demonstrated in sections @sec-lcz-preprocessing, @sec-lcz-patch-extraction and @sec-lcz-classification.
+
+No conclusive judgment on the adherence to all requirements listed in @sec-requirements under all valid input conditions can be made without inspection of the source code.
+The demonstration evaluates the statically available information (the CWL document, and container image) as well as the outputs produced by a single example input dataset.
+It does not show how the validity and content of the generated output depends on the input dataset. While inputs are shown to be a directory containing STAC metadata,
+only inspection of the source code can establish whether the STAC is actually processed.
+
+Furthermore, the demonstration purely evaluates the adherence of the software to the interoperability best practice and makes no attempt to judge the scientific validity
+of the data products produced.
