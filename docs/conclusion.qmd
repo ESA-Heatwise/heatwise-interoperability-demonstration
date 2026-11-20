@@ -1,0 +1,33 @@
+# Conclusion {#sec-conclusion}
+
+This technical note has demonstrated adherence to the [OGC Best Practice for Earth Observation Application Package](http://www.opengis.net/doc/BP/eoap/1.0) (EOAP) for the software products of HEATWISE.
+
+All software products, listed in table @tbl-software-products, are shown to comply with the best practice. Four of the EOAPs have been generated from Jupyter Notebooks using [`xcengine`](https://github.com/xcube-dev/xcengine):
+
+1. LST Hotspot detection
+1. Apparent Thermal Inertia
+1. Combined Hotspots and Urban Materials
+1. PFTNC
+
+The source notebooks are available in the respective Github repositories in the [ESA-Heatwise Github Organization](https://github.com/orgs/ESA-Heatwise/repositories). The remaining EOAPs were developed independently.
+
+Almost all Heatwise EOAPs follow the same structure of a command-line software wrapped in a single CWL `CommandLineTool` which is called by the main CWL `Workflow`. The demonstration has been developed with this structure in mind. One call to the command line software is equivalent to the execution as an EOAP. The exception is the LCZ pipeline, which combines multiple software components in each with their own `CommandLineTool`. The components themselves are separately available as EOAPs:
+
+1. HSI + LST preprocessing
+1. Patch extraction
+1. LCZ classification
+
+Therefore, the parts of the demonstration that would be duplicated with other EOAPs have been skipped for the full pipeline.
+
+
+## Methodological limitations
+
+The tools described in this technical note are intended as support for manual inspection of an EOAP in development, to verify that it is compliant with the best practice. On their own, they do not constitute a technical verification of the best practice. Scripts are useful to extract the information relevant for a specific requirement, but human inspection is still required. The PASSED/FAILED section in the summary serves as a quick overview of the status of an EOAP but cannot guarantee that an EOAP is indeed compliant or that `Passed` will be reported for any compliant EOAP.
+
+Fundamentally, some of the EOAP requirements cannot be checked statically, because they depend on runtime behavior. This includes requirements `req/app/stac-input`, `req/app/stac-output`, `re/app-satc-out-metadata`. The demonstration works around this problem by running the EOAP on a single example input and observing its behavior. This gives a useful indication for these requirements, but cannot establish the adherence for arbitrary inputs matching the CWL input definition.
+
+This simplification implies limitations of what is demonstrated:
+
+- The demonstration does not check the validity of the input STAC or if the input data files are correctly referenced in the STAC
+- The demonstration does not verify that input STAC is processed at all
+- STAC output validity is shown for a specific example, dependence of the produced STAC on the input STAC is not evaluated
