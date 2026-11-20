@@ -334,5 +334,5 @@ The demonstration evaluates the statically available information (the CWL docume
 It does not show how the validity and content of the generated output depends on the input dataset. While inputs are shown to be a directory containing STAC metadata,
 only inspection of the source code can establish whether the STAC is actually processed.
 
-Furthermore, he demonstration purely evaluates the adherence of the software to the interoperability best practice and makes no attempt to judge the scientific validity
+Furthermore, the demonstration purely evaluates the adherence of the software to the interoperability best practice and makes no attempt to judge the scientific validity
 of the data products produced.

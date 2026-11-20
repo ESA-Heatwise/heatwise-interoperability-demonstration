@@ -323,5 +323,17 @@ for i in {1..14}; do
         printf '%s\t\033[32mPASSED\033[0m\n' "$req"
     fi
 done
-
 ```
+
+The pre-processing step of the Local Climate Zone classification software has been shown to be non-interactively executable from the command line and using a CWL runner (`cwltool`).
+Furthermore it follows the CWL structure and mandatory fields prescribed by the OGC Best Practice for Earth Observation Application Package (EOAP).
+Inputs and outputs are processed as CWL `Directories` and valid STAC metadata is generated for the output.
+It may therefore be concluded that the software behaves as expected by the EOAP best practice in the example scenario.
+
+No conclusive judgment on the adherence to all requirements listed in @sec-requirements under all valid input conditions can be made without inspection of the source code.
+The demonstration evaluates the statically available information (the CWL document, and container image) as well as the outputs produced by a single example input dataset.
+It does not show how the validity and content of the generated output depends on the input dataset. While inputs are shown to be a directory containing STAC metadata,
+only inspection of the source code can establish whether the STAC is actually processed.
+
+Furthermore, the demonstration purely evaluates the adherence of the software to the interoperability best practice and makes no attempt to judge the scientific validity
+of the data products produced.
