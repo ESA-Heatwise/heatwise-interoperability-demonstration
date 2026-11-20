@@ -310,6 +310,8 @@ extract-commandlinetool-outputs.sh "$CWL_PATH" || FAIL_REQ_14=1
 
 ## Summary
 
+Requirement 1 is not tested (see below)
+
 ```{bash}
 
 for i in {2..14}; do
