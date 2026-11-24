@@ -38,7 +38,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/lstm-wp3-products/products/ua
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise-combined-hotspots-materials.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/combined_hotspots_materials
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/lstm-wp3-products-ua:latest
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/lstm-wp3-products-ua:1.0.0
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/combined_hotspots_materials/
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"

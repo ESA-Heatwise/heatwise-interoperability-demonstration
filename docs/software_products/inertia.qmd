@@ -36,7 +36,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/lstm-wp3-products/products/inertia
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise-inertia.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/inertia
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/lstm-wp3-products-inertia:latest
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/lstm-wp3-products-inertia:1.0.0
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/inertia
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"

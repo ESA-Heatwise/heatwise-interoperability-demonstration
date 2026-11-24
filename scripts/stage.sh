@@ -23,15 +23,15 @@ stage_lstm_wp3_products() {
     # inertia
     (cd "$CWL_PATH" && fetch "$REMOTE_BASE/releases/${VERSION}/download/heatwise-inertia.cwl")
     # combined urban atlas hotspots materials
-    fetch "$REMOTE_BASE/releases/${VERSION}/download/heatwise-ua.cwl" -o "$CWL_PATH/heatwise-combined-hotspots-materials.cwl"
+    (cd "$CWL_PATH" && fetch "$REMOTE_BASE/releases/${VERSION}/download/heatwise-ua.cwl" && mv "heatwise-ua.cwl" "heatwise-combined-hotspots-materials.cwl")
 
 
     mkdir -p $INPUTS_PATH/{hotspots,inertia,combined_hotspots_materials}
-    cp -r "$PRODUCTS_BASE"/hotspots/inputs/* $INPUTS_PATH/hotspots
+    cp -r "$PRODUCTS_BASE"/hotspots/inputs/* "$INPUTS_PATH/hotspots"
 
-    cp -r "$PRODUCTS_BASE"/inertia/inputs/* $INPUTS_PATH/inertia
+    cp -r "$PRODUCTS_BASE"/inertia/inputs/* "$INPUTS_PATH/inertia"
 
-    cp -r "$PRODUCTS_BASE"/ua/inputs/* $INPUTS_PATH/combined_hotspots_materials
+    cp -r "$PRODUCTS_BASE"/ua/inputs/* "$INPUTS_PATH/combined_hotspots_materials"
 }
 
 stage_hysupp() {
@@ -60,16 +60,16 @@ stage_lcz() {
     PIPELINE_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-lcz-pipeline"
 
     sparse_checkout "$PREP_REMOTE_ROOT.git" "$GIT_REF" "$PREP_ROOT" examples/stac_input data
-    sparse_checkout "$PATCH_REMOTE_ROOT.git" "$GIT_REF" "$PATCH_ROOT" data
-    sparse_checkout "$CLASSIFICATION_REMOTE_ROOT.git" "$GIT_REF" "$CLASSIFICATION_ROOT" data
-    sparse_checkout "$PIPELINE_REMOTE_ROOT.git" "$GIT_REF" "$PIPELINE_ROOT" data
+    sparse_checkout "$PATCH_REMOTE_ROOT.git" "$GIT_REF" "$PATCH_ROOT" data examples
+    sparse_checkout "$CLASSIFICATION_REMOTE_ROOT.git" "$GIT_REF" "$CLASSIFICATION_ROOT" data examples
+    sparse_checkout "$PIPELINE_REMOTE_ROOT.git" "$GIT_REF" "$PIPELINE_ROOT" data examples
 
     mkdir -p $INPUTS_PATH/{hsi-lst-prep,patch-extraction,lcz-classification,lcz-pipeline}
 
     (cd $CWL_PATH && fetch "$PREP_REMOTE_ROOT/releases/$VERSION/download/heatwise_hsi_lst_prep.cwl")
     (cd $CWL_PATH && fetch "$PATCH_REMOTE_ROOT/releases/$VERSION/download/heatwise_patch_extraction.cwl")
     (cd $CWL_PATH && fetch "$CLASSIFICATION_REMOTE_ROOT/releases/$VERSION/download/heatwise_lcz_predict.cwl")
-    (cd $CWL_PATH && fetch "$PIPELINE_REMOTE_ROOT/releases/$VERSION/download/heatwise_pipeline_packed.cwl")
+    (cd $CWL_PATH && fetch "$PIPELINE_REMOTE_ROOT/releases/$VERSION/download/heatwise_pipeline.cwl")
 
     cp -r $PREP_ROOT/examples/stac_input/* "$INPUTS_PATH/hsi-lst-prep/"
     cp -r $PREP_ROOT/data "$INPUTS_PATH/hsi-lst-prep/"
@@ -83,7 +83,7 @@ stage_pftnc() {
     VERSION=${1:-latest}
     REPO_BASE=$SOFTWARE_PATH/heatwise-pftnc
     REMOTE_BASE=https://github.com/ESA-Heatwise/heatwise-pftnc
-    sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE" input
+    sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE" input eoap
 
     (cd "$CWL_PATH" && fetch "$REMOTE_BASE/releases/$VERSION/download/pftnc.cwl")
 
