@@ -30,4 +30,5 @@ book:
         text: LCZ Full Pipeline
       - href: software_products/pftnc.qmd
         text: PFTNC
+    - href: conclusion.qmd
 

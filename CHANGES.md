@@ -5,6 +5,8 @@
 ## New
 
 - All CWL documents are now referenced from a specific release, with a static version number instead of using moving tags like `latest` or `eoap-compliance`. The version for each CWL document may be set in `scripts/stage.sh`
+- Each EOAP chapter now includes a short summary of what has been shown
+- Added conclusion.qmd (Chapter conclusion) with an overview of the demonstration and limitations of the methodology
 
 ## Fixes
 
@@ -14,3 +16,4 @@
 
 - `stage` now pre-downloads Docker images. The first target to be rendered no longer includes lengthy output from Docker pull.
 - Github workflow to render HTML and PDF targets is no-longer excuted on pull request
+- Requirements with lists are now rendered correctly as lists
