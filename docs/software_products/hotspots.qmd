@@ -36,7 +36,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/lstm-wp3-products/products/hotspots
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise-hotspots.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/hotspots
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/lstm-wp3-products-hotspots:latest
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/lstm-wp3-products-hotspots:1.0.0
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/hotspots
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"

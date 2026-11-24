@@ -35,7 +35,7 @@ Set environment variables to software, cwl documents, inputs and outputs.
 set -o pipefail
 set -x
 SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-lcz-pipeline
-CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_pipeline_packed.cwl
+CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_pipeline.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/lcz-pipeline
 
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/lcz-pipeline
@@ -102,6 +102,7 @@ show-cwl-graph-classes.sh "$CWL_PATH"
 ```
 
 The EOAP can be executed from its CWL description with `cwltool`.
+
 
 ```{bash}
 cwltool \

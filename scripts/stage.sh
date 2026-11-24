@@ -1,5 +1,5 @@
 #!/bin/env bash
-set -xe
+set -xeuo pipefail
 
 SOFTWARE_PATH="./software"
 CWL_PATH="./application-packages"
@@ -11,58 +11,85 @@ mkdir -p $INPUTS_PATH
 mkdir -p $CWL_PATH
 
 stage_lstm_wp3_products() {
+    VERSION=${1:-latest}
+    REMOTE_BASE="https://github.com/ESA-Heatwise/lstm-wp3-products"
     REPO_BASE="$SOFTWARE_PATH/lstm-wp3-products"
-    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/lstm-wp3-products.git "$REPO_BASE"
+    sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE"  products/{hotspots,inertia,ua}/inputs
     PRODUCTS_BASE="$REPO_BASE/products"
+    if [[ $VERSION = "latest" ]] then
+        DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
+    else
+        DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
+    fi
 
     # hotspots
-    cp "$PRODUCTS_BASE/hotspots/app/eoap.cwl" "$CWL_PATH/heatwise-hotspots.cwl"
+    (cd "$CWL_PATH" && fetch "$DOWNLOAD_BASE/heatwise-hotspots.cwl")
     # inertia
-    cp "$PRODUCTS_BASE/inertia/app/eoap.cwl" "$CWL_PATH/heatwise-inertia.cwl"
-
+    (cd "$CWL_PATH" && fetch "$DOWNLOAD_BASE/heatwise-inertia.cwl")
     # combined urban atlas hotspots materials
-    cp "$PRODUCTS_BASE/ua/app/eoap.cwl" "$CWL_PATH/heatwise-combined-hotspots-materials.cwl"
+    (cd "$CWL_PATH" && fetch "$DOWNLOAD_BASE/heatwise-ua.cwl" && mv "heatwise-ua.cwl" "heatwise-combined-hotspots-materials.cwl")
 
 
     mkdir -p $INPUTS_PATH/{hotspots,inertia,combined_hotspots_materials}
-    cp -r "$PRODUCTS_BASE"/hotspots/inputs/* $INPUTS_PATH/hotspots
+    cp -r "$PRODUCTS_BASE"/hotspots/inputs/* "$INPUTS_PATH/hotspots"
 
-    cp -r "$PRODUCTS_BASE"/inertia/inputs/* $INPUTS_PATH/inertia
+    cp -r "$PRODUCTS_BASE"/inertia/inputs/* "$INPUTS_PATH/inertia"
 
-    cp -r "$PRODUCTS_BASE"/ua/inputs/* $INPUTS_PATH/combined_hotspots_materials
+    cp -r "$PRODUCTS_BASE"/ua/inputs/* "$INPUTS_PATH/combined_hotspots_materials"
 }
 
 stage_hysupp() {
+    VERSION=${1:-latest}
     REPO_BASE=$SOFTWARE_PATH/heatwise-hysupp-unmixing
+    REMOTE_BASE=https://github.com/ESA-Heatwise/heatwise-hysupp-unmixing
+    if [[ $VERSION = "latest" ]] then
+        DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
+    else
+        DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
+    fi
 
-    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-hysupp-unmixing.git "$REPO_BASE"
+    mkdir -p $INPUTS_PATH/unmixing
+
+    # fetch inputs from repo
+    sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$INPUTS_PATH/unmixing" data/
 
     # cwl
-    cp "$REPO_BASE/heatwise_hysupp_unmixing.cwl" "$CWL_PATH/"
-
-
-    # inputs
-    mkdir -p $INPUTS_PATH/unmixing
-    cp -r "$REPO_BASE/data" "$INPUTS_PATH/unmixing/"
+    (cd $CWL_PATH && fetch "$DOWNLOAD_BASE/heatwise_hysupp_unmixing.cwl")
 }
 
 stage_lcz() {
+    VERSION=${1:-latest}
     PREP_ROOT="$SOFTWARE_PATH/heatwise-hsi-lst-prep"
+    PREP_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-hsi-lst-prep"
     PATCH_ROOT="$SOFTWARE_PATH/heatwise-patch-extraction"
+    PATCH_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-patch-extraction"
     CLASSIFICATION_ROOT="$SOFTWARE_PATH/heatwise-lcz-classification"
+    CLASSIFICATION_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-lcz-classification"
     PIPELINE_ROOT="$SOFTWARE_PATH/heatwise-lcz-pipeline"
+    PIPELINE_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-lcz-pipeline"
+    if [[ $VERSION = "latest" ]] then
+        PREP_DOWNLOAD_BASE="$PREP_REMOTE_ROOT/releases/latest/download"
+        PATCH_DOWNLOAD_BASE="$PATCH_REMOTE_ROOT/releases/latest/download"
+        CLASSIFICATION_DOWNLOAD_BASE="$CLASSIFICATION_REMOTE_ROOT/releases/latest/download"
+        PIPELINE_DOWNLOAD_BASE="$PIPELINE_REMOTE_ROOT/releases/latest/download"
+    else
+        PREP_DOWNLOAD_BASE="$PREP_REMOTE_ROOT/releases/download/${VERSION}"
+        PATCH_DOWNLOAD_BASE="$PATCH_REMOTE_ROOT/releases/download/${VERSION}"
+        CLASSIFICATION_DOWNLOAD_BASE="$CLASSIFICATION_REMOTE_ROOT/releases/download/${VERSION}"
+        PIPELINE_DOWNLOAD_BASE="$PIPELINE_REMOTE_ROOT/releases/download/${VERSION}"
+    fi
 
-    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-hsi-lst-prep.git $PREP_ROOT
-    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-patch-extraction.git $PATCH_ROOT
-    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-lcz-classification.git $CLASSIFICATION_ROOT
-    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-lcz-pipeline.git $PIPELINE_ROOT
+    sparse_checkout "$PREP_REMOTE_ROOT.git" "$GIT_REF" "$PREP_ROOT" examples/stac_input data
+    sparse_checkout "$PATCH_REMOTE_ROOT.git" "$GIT_REF" "$PATCH_ROOT" data examples
+    sparse_checkout "$CLASSIFICATION_REMOTE_ROOT.git" "$GIT_REF" "$CLASSIFICATION_ROOT" data examples
+    sparse_checkout "$PIPELINE_REMOTE_ROOT.git" "$GIT_REF" "$PIPELINE_ROOT" data examples
 
     mkdir -p $INPUTS_PATH/{hsi-lst-prep,patch-extraction,lcz-classification,lcz-pipeline}
-    cp $PREP_ROOT/heatwise_hsi_lst_prep.cwl "$CWL_PATH/"
-    cp $PATCH_ROOT/heatwise_patch_extraction.cwl "$CWL_PATH/"
-    cp $CLASSIFICATION_ROOT/heatwise_lcz_predict.cwl "$CWL_PATH/"
-    cp $CLASSIFICATION_ROOT/heatwise_lcz_train.cwl "$CWL_PATH/"
-    cwltool --pack $PIPELINE_ROOT/heatwise_pipeline.cwl > "$CWL_PATH/heatwise_pipeline_packed.cwl"
+
+    (cd $CWL_PATH && fetch "${PREP_DOWNLOAD_BASE}/heatwise_hsi_lst_prep.cwl")
+    (cd $CWL_PATH && fetch "${PATCH_DOWNLOAD_BASE}/heatwise_patch_extraction.cwl")
+    (cd $CWL_PATH && fetch "${CLASSIFICATION_DOWNLOAD_BASE}/heatwise_lcz_predict.cwl")
+    (cd $CWL_PATH && fetch "${PIPELINE_DOWNLOAD_BASE}/heatwise_pipeline.cwl")
 
     cp -r $PREP_ROOT/examples/stac_input/* "$INPUTS_PATH/hsi-lst-prep/"
     cp -r $PREP_ROOT/data "$INPUTS_PATH/hsi-lst-prep/"
@@ -73,15 +100,39 @@ stage_lcz() {
 }
 
 stage_pftnc() {
+    VERSION=${1:-latest}
     REPO_BASE=$SOFTWARE_PATH/heatwise-pftnc
-    git clone --branch "$GIT_REF" https://github.com/ESA-Heatwise/heatwise-pftnc.git "$REPO_BASE"
+    REMOTE_BASE=https://github.com/ESA-Heatwise/heatwise-pftnc
+    if [[ $VERSION = "latest" ]] then
+        DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
+    else
+        DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
+    fi
+    sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE" input eoap
 
-    cp "$REPO_BASE/eoap/pftnc.cwl" "$CWL_PATH/"
+    (cd "$CWL_PATH" && fetch "${DOWNLOAD_BASE}/pftnc.cwl")
 
     mkdir -p $INPUTS_PATH/pftnc
     cp -r "$REPO_BASE/input/berlin_muggelsee" "$INPUTS_PATH/pftnc/"
 }
 
+stage_class_guided() {
+    VERSION=${1:-latest}
+    if [[ $VERSION = "latest" ]] then
+        DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
+    else
+        DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
+    fi
+    REPO_BASE="$SOFTWARE_PATH/heatwise-class-guided"
+    REMOTE_BASE="https://github.com/ESA-Heatwise/heatwise-class-guided"
+    sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE" examples/sepolia
+
+    (cd "$CWL_PATH" && fetch "${DOWNLOAD_BASE}/heatwise-class-guided.cwl")
+    cp -r "$REPO_BASE/examples/sepolia" "$INPUTS_PATH/class-guided"
+
+}
+
+# Pre-download all docker images referenced in CWL. Must run after the repo/product-specific tasks
 stage_docker_images() {
     XCENGINE_GRAPH_ID="#xce_script"
     for f in "$CWL_PATH"/*.cwl; do
@@ -95,13 +146,27 @@ clean() {
     rm -rI "$INPUTS_PATH"
 }
 
-if [[ $1 == "clean" ]]; then
+# Sparse checkout a git repository ($1) at a specified branch/tag ($2) to target directory ($3)
+# Only the specified files/directories (additional args) are downloaded
+#
+sparse_checkout() {
+    local url=$1 ref=$2 dir=$3; shift 3
+    git clone -q --depth 1 --filter=blob:none --no-checkout --branch "$ref" "$url" "$dir"
+    git -C "$dir" sparse-checkout set "$@"
+    git -C "$dir" checkout -q
+}
+
+fetch() {
+    curl -O -L -f $@
+}
+
+if [[ ${1:-" "} == "clean" ]]; then
     clean
 else
-    stage_lstm_wp3_products
-    stage_hysupp
-    stage_lcz
-    stage_pftnc
+    stage_lstm_wp3_products v1.0.0
+    stage_hysupp v1.0.0
+    stage_lcz v1.0.0
+    stage_pftnc v1.0.0
     stage_docker_images
 fi
 

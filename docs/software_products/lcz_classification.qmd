@@ -38,7 +38,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-lcz-classification
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_lcz_predict.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/lcz-classification
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-lcz-classification:eoap-compliance
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-lcz-classification:1.0.0
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/lcz-classification
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"

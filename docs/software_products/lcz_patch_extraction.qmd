@@ -34,7 +34,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-patch-extraction
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_patch_extraction.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/patch-extraction
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-patch-extraction:eoap-compliance
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-patch-extraction:1.0.0
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/patch-extraction
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"

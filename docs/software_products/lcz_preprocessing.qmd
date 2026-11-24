@@ -34,7 +34,7 @@ SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-hsi-lst-prep
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_hsi_lst_prep.cwl
 INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/hsi-lst-prep
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-hsi-lst-prep:eoap-compliance
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-hsi-lst-prep:1.0.0
 OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/hsi-lst-prep
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
