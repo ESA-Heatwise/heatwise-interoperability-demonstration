@@ -11,15 +11,15 @@ mkdir -p $INPUTS_PATH
 mkdir -p $CWL_PATH
 
 stage_lstm_wp3_products() {
-    VERSION=${1:-latest}
-    REMOTE_BASE="https://github.com/ESA-Heatwise/lstm-wp3-products"
-    REPO_BASE="$SOFTWARE_PATH/lstm-wp3-products"
+    local VERSION=${1:-latest}
+    local REMOTE_BASE="https://github.com/ESA-Heatwise/lstm-wp3-products"
+    local REPO_BASE="$SOFTWARE_PATH/lstm-wp3-products"
     sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE"  products/{hotspots,inertia,ua}/inputs
-    PRODUCTS_BASE="$REPO_BASE/products"
+    local PRODUCTS_BASE="$REPO_BASE/products"
     if [[ $VERSION = "latest" ]] then
-        DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
+        local DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
     else
-        DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
+        local DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
     fi
 
     # hotspots
@@ -39,13 +39,13 @@ stage_lstm_wp3_products() {
 }
 
 stage_hysupp() {
-    VERSION=${1:-latest}
-    REPO_BASE=$SOFTWARE_PATH/heatwise-hysupp-unmixing
-    REMOTE_BASE=https://github.com/ESA-Heatwise/heatwise-hysupp-unmixing
+    local VERSION=${1:-latest}
+    local REPO_BASE=$SOFTWARE_PATH/heatwise-hysupp-unmixing
+    local REMOTE_BASE=https://github.com/ESA-Heatwise/heatwise-hysupp-unmixing
     if [[ $VERSION = "latest" ]] then
-        DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
+        local DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
     else
-        DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
+        local DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
     fi
 
     mkdir -p $INPUTS_PATH/unmixing
@@ -58,25 +58,25 @@ stage_hysupp() {
 }
 
 stage_lcz() {
-    VERSION=${1:-latest}
-    PREP_ROOT="$SOFTWARE_PATH/heatwise-hsi-lst-prep"
-    PREP_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-hsi-lst-prep"
-    PATCH_ROOT="$SOFTWARE_PATH/heatwise-patch-extraction"
-    PATCH_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-patch-extraction"
-    CLASSIFICATION_ROOT="$SOFTWARE_PATH/heatwise-lcz-classification"
-    CLASSIFICATION_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-lcz-classification"
-    PIPELINE_ROOT="$SOFTWARE_PATH/heatwise-lcz-pipeline"
-    PIPELINE_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-lcz-pipeline"
+    local VERSION=${1:-latest}
+    local PREP_ROOT="$SOFTWARE_PATH/heatwise-hsi-lst-prep"
+    local PREP_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-hsi-lst-prep"
+    local PATCH_ROOT="$SOFTWARE_PATH/heatwise-patch-extraction"
+    local PATCH_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-patch-extraction"
+    local CLASSIFICATION_ROOT="$SOFTWARE_PATH/heatwise-lcz-classification"
+    local CLASSIFICATION_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-lcz-classification"
+    local PIPELINE_ROOT="$SOFTWARE_PATH/heatwise-lcz-pipeline"
+    local PIPELINE_REMOTE_ROOT="https://github.com/ESA-Heatwise/heatwise-lcz-pipeline"
     if [[ $VERSION = "latest" ]] then
-        PREP_DOWNLOAD_BASE="$PREP_REMOTE_ROOT/releases/latest/download"
-        PATCH_DOWNLOAD_BASE="$PATCH_REMOTE_ROOT/releases/latest/download"
-        CLASSIFICATION_DOWNLOAD_BASE="$CLASSIFICATION_REMOTE_ROOT/releases/latest/download"
-        PIPELINE_DOWNLOAD_BASE="$PIPELINE_REMOTE_ROOT/releases/latest/download"
+        local PREP_DOWNLOAD_BASE="$PREP_REMOTE_ROOT/releases/latest/download"
+        local PATCH_DOWNLOAD_BASE="$PATCH_REMOTE_ROOT/releases/latest/download"
+        local CLASSIFICATION_DOWNLOAD_BASE="$CLASSIFICATION_REMOTE_ROOT/releases/latest/download"
+        local PIPELINE_DOWNLOAD_BASE="$PIPELINE_REMOTE_ROOT/releases/latest/download"
     else
-        PREP_DOWNLOAD_BASE="$PREP_REMOTE_ROOT/releases/download/${VERSION}"
-        PATCH_DOWNLOAD_BASE="$PATCH_REMOTE_ROOT/releases/download/${VERSION}"
-        CLASSIFICATION_DOWNLOAD_BASE="$CLASSIFICATION_REMOTE_ROOT/releases/download/${VERSION}"
-        PIPELINE_DOWNLOAD_BASE="$PIPELINE_REMOTE_ROOT/releases/download/${VERSION}"
+        local PREP_DOWNLOAD_BASE="$PREP_REMOTE_ROOT/releases/download/${VERSION}"
+        local PATCH_DOWNLOAD_BASE="$PATCH_REMOTE_ROOT/releases/download/${VERSION}"
+        local CLASSIFICATION_DOWNLOAD_BASE="$CLASSIFICATION_REMOTE_ROOT/releases/download/${VERSION}"
+        local PIPELINE_DOWNLOAD_BASE="$PIPELINE_REMOTE_ROOT/releases/download/${VERSION}"
     fi
 
     sparse_checkout "$PREP_REMOTE_ROOT.git" "$GIT_REF" "$PREP_ROOT" examples/stac_input data
@@ -100,13 +100,13 @@ stage_lcz() {
 }
 
 stage_pftnc() {
-    VERSION=${1:-latest}
-    REPO_BASE=$SOFTWARE_PATH/heatwise-pftnc
-    REMOTE_BASE=https://github.com/ESA-Heatwise/heatwise-pftnc
+    local VERSION=${1:-latest}
+    local REPO_BASE=$SOFTWARE_PATH/heatwise-pftnc
+    local REMOTE_BASE=https://github.com/ESA-Heatwise/heatwise-pftnc
     if [[ $VERSION = "latest" ]] then
-        DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
+        local DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
     else
-        DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
+        local DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
     fi
     sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE" input eoap
 
@@ -117,17 +117,17 @@ stage_pftnc() {
 }
 
 stage_class_guided() {
-    VERSION=${1:-latest}
+    local VERSION=${1:-latest}
+    local REPO_BASE="$SOFTWARE_PATH/heatwise-class-guided"
+    local REMOTE_BASE="https://github.com/ESA-Heatwise/heatwise-class-guided"
     if [[ $VERSION = "latest" ]] then
-        DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
+        local DOWNLOAD_BASE="$REMOTE_BASE/releases/latest/download"
     else
-        DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
+        local DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
     fi
-    REPO_BASE="$SOFTWARE_PATH/heatwise-class-guided"
-    REMOTE_BASE="https://github.com/ESA-Heatwise/heatwise-class-guided"
     sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE" examples/sepolia
 
-    (cd "$CWL_PATH" && fetch "${DOWNLOAD_BASE}/heatwise-class-guided.cwl")
+    (cd "$CWL_PATH" && fetch "${DOWNLOAD_BASE}/heatwise_class_guided.cwl")
     cp -r "$REPO_BASE/examples/sepolia" "$INPUTS_PATH/class-guided"
 
 }
@@ -167,6 +167,7 @@ else
     stage_hysupp v1.0.0
     stage_lcz v1.0.0
     stage_pftnc v1.0.0
+    stage_class_guided v0.3.2
     stage_docker_images
 fi
 
