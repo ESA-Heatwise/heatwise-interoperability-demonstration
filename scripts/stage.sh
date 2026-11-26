@@ -167,7 +167,7 @@ else
     stage_hysupp v1.0.0
     stage_lcz v1.0.0
     stage_pftnc v1.0.0
-    stage_class_guided v0.3.2
+    stage_class_guided v0.3.3
     stage_docker_images
 fi
 
