@@ -135,8 +135,9 @@ stage_class_guided() {
 # Pre-download all docker images referenced in CWL. Must run after the repo/product-specific tasks
 stage_docker_images() {
     XCENGINE_GRAPH_ID="#xce_script"
+
     for f in "$CWL_PATH"/*.cwl; do
-        cwl-docker-extract "$f" || cwl-docker-extract "${f}${XCENGINE_GRAPH_ID}"
+        cwl-docker-extract "$f" || cwl-docker-extract "${f}${XCENGINE_GRAPH_ID}" || cwl-docker-extract "${f}#main"
     done
 }
 
