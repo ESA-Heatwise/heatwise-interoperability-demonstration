@@ -34,10 +34,10 @@ set -o pipefail
 set -x
 SOFTWARE_ROOT="$PIXI_PROJECT_ROOT"/software/heatwise-class-guided
 CWL_PATH="$PIXI_PROJECT_ROOT"/application-packages/heatwise_class_guided.cwl
-INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/class_guided
+INPUT_PATH="$PIXI_PROJECT_ROOT"/inputs/class-guided
 
-DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-class-guided:0.3.2
-OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/class_guided
+DOCKER_IMAGE_ID=ghcr.io/esa-heatwise/heatwise-class-guided:0.3.3
+OUTPUT_PATH="$PIXI_PROJECT_ROOT"/outputs/class-guided
 
 ls -ltrAh --color=never "$SOFTWARE_ROOT"
 set +x
@@ -59,7 +59,7 @@ We can run the (dockerized) software directly, without using the CWL machinery w
 mkdir -p "$OUTPUT_PATH" \
 
 docker run --rm \
-    -v "$INPUT_PATH:/data" \
+    -v "$INPUT_PATH:/data"  \
     -v "$SOFTWARE_ROOT/examples:/auxdata" \
     -v "$OUTPUT_PATH:/results" \
     --user "$(id -u):$(id -g)" \
@@ -144,21 +144,6 @@ echo "Path to last cwl run: $CWLRUN_PATH"
 tree -n $CWLRUN_PATH || :
 ```
 
-```{bash}
-python -c "import matplotlib.pyplot as plt; \
-    import xarray as xr; \
-    import rioxarray as rio; \
-    ds=rio.open_rasterio(\"$CWLRUN_PATH/Sepolia_FCLS_classification_map_COG.tif\"); \
-    fig, ax=plt.subplots(); \
-    ds.plot(ax=ax, cmap='Set1_r', add_colorbar=False); \
-    ax.set(aspect=1, xticks=[], yticks=[], title='', xlabel='', ylabel=''); \
-    fig.savefig('classification_map.png'); \
-    ds.close()" || :
-```
-
-![Most abundant material map](classification_map.png)
-
-
 ## STAC input / output
 
 ### Inputs
@@ -241,26 +226,29 @@ check-version.sh $CWL_PATH || FAIL_REQ_11=1
 **req/app-pck/clt** (Requirement 8)
 
 > The Application Package CWL CommandLineTool classes SHALL contain the following elements:
-> — Identifier (“id”)
-> — Command line name (“baseCommand”)
-> — Input parameters (“inputs”)
-> — Environment requirements (“requirements”)
-> — Docker information (“DockerRequirement”)
+>
+> - Identifier (“id”)
+> - Command line name (“baseCommand”)
+> - Input parameters (“inputs”)
+> - Environment requirements (“requirements”)
+> - Docker information (“DockerRequirement”)
 
 **req/app-pck/wf** (Requirement 9)
 
 > The Application Package CWL Workflow class SHALL contain the following elements:
-> — Identifier (“id”)
-> — Title (“label”)
-> — Abstract (“doc”)
+>
+> - Identifier (“id”)
+> - Title (“label”)
+> - Abstract (“doc”)
 
 
 **req/app-pck/wf-inputs** (Requirement 10)
 
 > The Application Package CWL Workflow class “inputs” fields SHALL contain the following elements:
-> — Identifier (“id”)
-> — Title (“label”)
-> — Abstract (“doc”)
+>
+> - Identifier (“id”)
+> - Title (“label”)
+> - Abstract (“doc”)
 
 **req/app-pck/metadata** (Requirement 11)
 
