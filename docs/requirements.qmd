@@ -272,8 +272,8 @@ The first call to `yq` extracts the `outputs` field, the second one makes sure t
 ```{.bash include="../scripts/extract-commandlinetool-outputs.sh"}
 ```
 :::
+::: {.content-visible unless-format="html"}
 ```{bash}
 cat $(which extract-commandlinetool-outputs.sh)
 ```
-::: {.content-visible unless-format="html"}
 :::
