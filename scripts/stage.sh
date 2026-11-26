@@ -125,7 +125,7 @@ stage_class_guided() {
     else
         local DOWNLOAD_BASE="$REMOTE_BASE/releases/download/${VERSION}"
     fi
-    sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE" examples/sepolia
+    sparse_checkout "$REMOTE_BASE.git" "$GIT_REF" "$REPO_BASE" examples/sepolia examples/resources
 
     (cd "$CWL_PATH" && fetch "${DOWNLOAD_BASE}/heatwise_class_guided.cwl")
     cp -r "$REPO_BASE/examples/sepolia" "$INPUTS_PATH/class-guided"
