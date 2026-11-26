@@ -7,6 +7,7 @@
 - All CWL documents are now referenced from a specific release, with a static version number instead of using moving tags like `latest` or `eoap-compliance`. The version for each CWL document may be set in `scripts/stage.sh`
 - Each EOAP chapter now includes a short summary of what has been shown
 - Added conclusion.qmd (Chapter conclusion) with an overview of the demonstration and limitations of the methodology
+- Added the class guided urban material mapping software <https://github.com/ESA-Heatwise/heatwise-class-guided>
 
 ## Fixes
 
