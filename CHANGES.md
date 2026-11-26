@@ -18,3 +18,4 @@
 - `stage` now pre-downloads Docker images. The first target to be rendered no longer includes lengthy output from Docker pull.
 - Github workflow to render HTML and PDF targets is no-longer excuted on pull request
 - Requirements with lists are now rendered correctly as lists
+- Some checks are made more comprehensive: Output STAC may have `start_datetime` and `end_datetime` instead of a `datetime` field. The version may also be specified as `https://schema.org/version` (previously: only `s:version` was checked).
