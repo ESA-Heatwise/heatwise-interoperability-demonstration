@@ -17,14 +17,16 @@ yq -y -M -e '
         },
         bbox: .bbox,
         properties: {
-            datetime: .properties.datetime
+            datetime: .properties.datetime,
+            start_datetime: .properties.start_datetime,
+            end_datetime: .properties.end_datetime
         }
     }
     ' $1
 
 status_a=$?
 
-found_keys=$(yq -M -e '(has("geometry") and (.geometry | has("coordinates"))) and (.geometry != null and .bbox != null) and (.properties | has("datetime"))' $1)
+found_keys=$(yq -M -e '(has("geometry") and (.geometry | has("coordinates"))) and (.geometry != null and .bbox != null) and (.properties | (has("datetime") and .datetime != null) or ((has("start_datetime") and .start_datetime != null) and (has("end_datetime") and .end_datetime != null)))' $1)
 status_b=$?
 
 echo ""
