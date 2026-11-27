@@ -1,6 +1,6 @@
 # CHANGELOG
 
-# Changes in version \[v1.0.1\] (unreleased)
+# Changes in version \[v1.0.1\]
 
 ## New
 
